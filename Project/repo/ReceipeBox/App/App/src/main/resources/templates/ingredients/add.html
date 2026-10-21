@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Create Ingredient — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-ingredients')}"></div>
+
+	<main class="container">
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Create Ingredient</h2>
+				<p>Register a raw food element</p>
+			</div>
+
+			<form th:action="@{/admin/ingredient/save}" th:object="${ingredient}"
+				method="POST">
+
+				<input type="hidden" th:name="${_csrf.parameterName}"
+					th:value="${_csrf.token}" />
+
+				<div class="form-group">
+					<label for="name" class="form-label">Ingredient Name</label> <input
+						type="text" id="name" th:field="*{name}" class="form-control"
+						placeholder="e.g. Fresh Cilantro, Whole Milk, Chicken Breast">
+					<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+						style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Select Allergy:</label>
+
+					<!-- allergy more 5, max-height, overflow-y  -->
+					<div
+						th:style="${#lists.size(allAllergens) > 5} ? 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; max-height: 160px; overflow-y: auto; background-color: #f8fafc; margin-top: 8px;' : 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background-color: #f8fafc; margin-top: 8px;'">
+
+						<!-- if 5 and less flex ,more 5  grid -->
+						<div
+							th:style="${#lists.size(allAllergens) <= 5} ? 'display: flex; gap: 20px; flex-wrap: wrap; align-items: center;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;'">
+
+							<div th:each="allergy : ${allAllergens}"
+								style="display: flex; align-items: center; gap: 8px;">
+								<input type="checkbox" name="allergenIds"
+									th:value="${allergy.allergenId}"
+									th:id="${'allergen_' + allergy.allergenId}"
+									th:checked="${allergenIds != null && #lists.contains(allergenIds, allergy.allergenId)}"
+									style="accent-color: var(--primary-color); width: 16px; height: 16px; cursor: pointer;">
+
+								<label th:for="${'allergen_' + allergy.allergenId}"
+									th:text="${allergy.name}"
+									style="font-size: 14px; color: #334155; cursor: pointer; font-weight: 500;"></label>
+							</div>
+						</div>
+
+					</div>
+					<small
+						style="color: #64748b; font-size: 12px; margin-top: 4px; display: block;">You
+						can select multiple allergies from the list above.</small>
+				</div>
+
+				<div class="form-action-row">
+					<a th:href="@{/admin/ingredient/list}"
+						class="btn-global btn-secondary"> <i class="bi bi-x-circle"></i>Cancel
+					</a>
+					<button type="submit" class="btn-global btn-primary">
+						<i class="bi bi-check-circle-fill"></i>Save Ingredient
+					</button>
+				</div>
+
+			</form>
+		</div>
+
+	</main>
+
+</body>
+</html>

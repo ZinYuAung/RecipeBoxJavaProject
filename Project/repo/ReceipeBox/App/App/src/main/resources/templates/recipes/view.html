@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Recipe Details — RecipeBox')}">
+</head>
+<body>
+	<th:block th:if="${session.loginUser.role.value == 'admin' || session.loginUser.role.value == 'superadmin'}">
+		<div
+			th:replace="~{fragments/admin-header :: global-header('admin-recipes')}"></div>
+	</th:block>
+
+	<th:block th:if="${session.loginUser.role.value == 'user'}">
+		<div
+			th:replace="~{fragments/user-header :: global-header('admin-recipes')}"></div>
+	</th:block>
+	<main class="container">
+
+		<div class="compact-workspace-card">
+			<div class="workspace-preview-left">
+
+				<img
+					th:if="${recipe.imageUrl != null and !#strings.isEmpty(recipe.imageUrl)}"
+					th:src="@{'/uploads/' + ${recipe.imageUrl}}"
+					class="preview-loaded-image" alt="Recipe Cover Image">
+
+				<div
+					th:if="${recipe.imageUrl == null or #strings.isEmpty(recipe.imageUrl)}"
+					 class="preview-placeholder-center">
+					<span class="placeholder-icon">🍲</span>
+					<p class="placeholder-text">No image uploaded for this recipe</p>
+				</div>
+			</div>
+
+			<div class="workspace-form-right">
+				<div class="form-title-area"
+					style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color, #e2e8f0);">
+					<span class="pill-badge active"
+						style="margin-bottom: 8px; display: inline-block;">Recipe
+						Profile</span>
+					<h2 th:text="${recipe.name}">Recipe Name Placeholder</h2>
+					<p style="color: #64748b; font-size: 14px; margin-top: 4px;">Review
+						catalog details, meal classifications, and nutritional target
+						categories.</p>
+				</div>
+				<div style="display: flex; flex-direction: column; gap: 18px;">
+					<div class="form-row-2col">
+
+						<!-- Meal Type Display -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Meal Type</label>
+							<div class="form-control"
+								style="background-color: #f8fafc; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+								<span>🍽️</span> <span th:text="${recipe.mealType}">Breakfast</span>
+							</div>
+						</div>
+
+						<!-- Cooking Time Display -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Cooking Time</label>
+							<div class="form-control"
+								style="background-color: #f8fafc; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+								<span>⏱️</span> <span
+									th:text="${recipe.cookingTimeMin != null ? recipe.cookingTimeMin + ' mins' : 'N/A'}">30
+									mins</span>
+							</div>
+						</div>
+						
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Calories</label>
+							<div class="form-control"
+								style="background-color: #f8fafc; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+								<span>⏱️</span> <span
+									th:text="${recipe.calories != 0 ? recipe.calories + ' kcal' : 'N/A'}">100
+									kcal</span>
+							</div>
+						</div>
+		
+
+						<!-- BMI Category Display -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Target BMI Category</label>
+							<div class="form-control"
+								style="background-color: #f8fafc; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+								<span>⚖️</span> <span
+									th:text="${recipe.bmiCategory != null ? recipe.bmiCategory : 'N/A'}"
+									th:class="${'badge badge-' + (recipe.bmiCategory != null ? recipe.bmiCategory.toString().toLowerCase() : 'secondary')}">
+									Normal </span>
+							</div>
+						</div>
+
+					</div>
+
+					<!-- Ingredients List Display Section -->
+					<div class="form-group" style="margin-bottom: 0;">
+						<!--  Total count  Flex container -->
+						<div
+							style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+							<label class="form-label"
+								style="margin-bottom: 0; font-weight: 700;">Recipe
+								Ingredients</label> <span
+								style="font-size: 13px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 10px; border-radius: 12px;"
+								th:text="'Ingredient Total: ' + ${recipe.ingredients != null ? #lists.size(recipe.ingredients) : 0}">
+								Ingredient Total: 0 </span>
+						</div>
+
+						<!-- no ingredient -->
+						<div
+							th:if="${recipe.ingredients == null or #lists.isEmpty(recipe.ingredients)}"
+							style="text-align: center; color: #64748b; padding: 16px; background: #f8fafc; font-size: 14px;">
+							No ingredients added to this recipe yet.</div>
+
+						<!-- less equal 5 ingredient -->
+						<div
+							th:if="${recipe.ingredients != null and #lists.size(recipe.ingredients) > 0 and #lists.size(recipe.ingredients) <= 5}"
+							style="display: flex; flex-direction: column; gap: 6px; background: #f8fafc;">
+							<div th:each="ri : ${recipe.ingredients}"
+								style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+								<span style="font-weight: 500; color: #334155;"
+									th:text="${ri.ingredient != null ? ri.ingredient.name : 'N/A'}">Ingredient
+									Name</span> <span style="color: #64748b; font-weight: 600;"
+									th:text="${ri.qty} + ' ' + ${ri.ingredientUnit}">0.0
+									unit</span>
+							</div>
+						</div>
+
+						<!-- more 5 and less equal 10 -->
+						<div
+							th:if="${recipe.ingredients != null and #lists.size(recipe.ingredients) > 5 and #lists.size(recipe.ingredients) <= 10}"
+							style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+
+							<!-- left Column/Box -->
+							<div
+								style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 6px;">
+								<th:block th:each="ri, iterStat : ${recipe.ingredients}"
+									th:if="${iterStat.index % 2 == 0}">
+									<div
+										style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+										<span style="font-weight: 500; color: #334155;"
+											th:text="${ri.ingredient != null ? ri.ingredient.name : 'N/A'}">Ingredient
+											Name</span> <span style="color: #64748b; font-weight: 600;"
+											th:text="${ri.qty} + ' ' + ${ri.ingredientUnit}">0.0
+											unit</span>
+									</div>
+								</th:block>
+							</div>
+
+							<!--right Column/Box -->
+							<div
+								style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 6px;">
+								<th:block th:each="ri, iterStat : ${recipe.ingredients}"
+									th:if="${iterStat.index % 2 != 0}">
+									<div
+										style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+										<span style="font-weight: 500; color: #334155;"
+											th:text="${ri.ingredient != null ? ri.ingredient.name : 'N/A'}">Ingredient
+											Name</span> <span style="color: #64748b; font-weight: 600;"
+											th:text="${ri.qty} + ' ' + ${ri.ingredientUnit}">0.0
+											unit</span>
+									</div>
+								</th:block>
+							</div>
+
+						</div>
+
+						<!-- more 10 -->
+						<div
+							th:if="${recipe.ingredients != null and #lists.size(recipe.ingredients) > 10}"
+							style="max-height: 210px; overflow-y: auto; overflow-x: hidden; padding: 6px; border-radius: 8px;">
+							<div
+								style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+
+								<div
+									style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 6px;">
+									<th:block th:each="ri, iterStat : ${recipe.ingredients}"
+										th:if="${iterStat.index % 2 == 0}">
+										<div
+											style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+											<span style="font-weight: 500; color: #334155;"
+												th:text="${ri.ingredient != null ? ri.ingredient.name : 'N/A'}">Ingredient
+												Name</span> <span style="color: #64748b; font-weight: 600;"
+												th:text="${ri.qty} + ' ' + ${ri.ingredientUnit}">0.0
+												unit</span>
+										</div>
+									</th:block>
+								</div>
+								<div
+									style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 6px;">
+									<th:block th:each="ri, iterStat : ${recipe.ingredients}"
+										th:if="${iterStat.index % 2 != 0}">
+										<div
+											style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+											<span style="font-weight: 500; color: #334155;"
+												th:text="${ri.ingredient != null ? ri.ingredient.name : 'N/A'}">Ingredient
+												Name</span> <span style="color: #64748b; font-weight: 600;"
+												th:text="${ri.qty} + ' ' + ${ri.ingredientUnit}">0.0
+												unit</span>
+										</div>
+									</th:block>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Description Area Display -->
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label">Description</label>
+						<div class="form-control"
+							style="background-color: #f8fafc; min-height: 90px; white-space: pre-line; line-height: 1.6; color: var(--dark-slate, #1e293b);"
+							th:text="${#strings.isEmpty(recipe.description) ? 'No description provided.' : recipe.description}">
+							Detailed steps and ingredient notes for this recipe...</div>
+					</div>
+
+					<!-- Action Buttons Row -->
+					<!-- <div class="form-action-row"
+						style="margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--border-color, #e2e8f0); display: flex; justify-content: space-between; align-items: center;">
+						<a th:href="@{/admin/recipe/list}"
+							class="btn-global btn-secondary"
+							style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+							<i class="bi bi-arrow-left"></i> Back to List
+						</a> <a th:href="@{/admin/recipe/edit/{id}(id=${recipe.recipeId})}"
+							class="btn-global btn-primary"
+							style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+							<i class="bi bi-pencil-square"></i> Edit Recipe
+						</a>
+					</div>
+					<!-- Action Buttons Row -->
+					<div class="form-action-row"
+						style="margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--border-color, #e2e8f0); display: flex; justify-content: space-between; align-items: center;">
+
+						<th:block th:if="${isAdmin}">
+							<a th:href="@{/admin/recipe/list}"
+								class="btn-global btn-secondary"
+								style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+								<i class="bi bi-arrow-left"></i> Back to List
+							</a>
+							<a th:href="@{/admin/recipe/edit/{id}(id=${recipe.recipeId})}"
+								class="btn-global btn-primary"
+								style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+								<i class="bi bi-pencil-square"></i> Edit Recipe
+							</a>
+						</th:block>
+
+						<th:block th:unless="${isAdmin}">
+							<a th:href="${backUrl}" class="btn-global btn-secondary"
+								style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+								<i class="bi bi-arrow-left"></i> Back
+							</a>
+						</th:block>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</main>
+
+</body>
+</html>

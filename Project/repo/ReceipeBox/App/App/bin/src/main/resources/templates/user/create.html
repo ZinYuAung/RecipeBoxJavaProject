@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Create User — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Create User</h2>
+				<p>Add a new user to the database.</p>
+			</div>
+
+			<form th:action="@{/admin/save}" th:object="${user}" method="POST">
+
+				<div class="form-group">
+					<label class="form-label">Full Name</label> <input type="text"
+						th:field="*{name}" class="form-control"
+						placeholder="e.g. John Doe" required>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Email</label> <input type="email"
+						th:field="*{email}" class="form-control"
+						placeholder="e.g. johndoe@example.com" required>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Password</label> <input type="password"
+						th:field="*{password_hash}" class="form-control"
+						placeholder="••••••••" required>
+				</div>
+
+				<div class="form-action-row">
+					<a th:href="@{/admin/user/list}" class="btn-global btn-secondary">Cancel</a>
+					<button type="submit" class="btn-global btn-primary">Create
+						User</button>
+				</div>
+
+			</form>
+		</div>
+
+	</main>
+
+</body>
+</html>

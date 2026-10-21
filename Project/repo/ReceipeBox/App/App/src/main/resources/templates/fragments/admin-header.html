@@ -1,0 +1,97 @@
+/<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+	<header th:fragment="global-header(page)" class="global-header">
+		<div class="header-left">
+			<a th:href="@{/home}" class="global-logo"> <span
+				class="logo-icon">🍳</span> <span class="logo-text">Recipe<span>Box</span></span>
+			</a>
+		</div>
+		<button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Navigation">
+			<i class="bi bi-list"></i>
+		</button>
+
+		<div class="header-right" id="headerRightMenu">
+			<nav class="header-nav-right">
+				<div class="nav-group">
+					<a th:href="@{/admin/dashboard}" class="nav-link"
+						th:classappend="${page == 'admin-dashboard'} ? 'active'">Dashboard</a>
+
+					<a th:href="@{/admin/recipe/list}" class="nav-link"
+						th:classappend="${page == 'admin-recipes'} ? 'active'">Recipes</a>
+
+					<a th:href="@{/admin/ingredient/list}" class="nav-link"
+						th:classappend="${page == 'admin-ingredients'} ? 'active'">Ingredients</a>
+
+					<a th:href="@{/admin/allergy/list}" class="nav-link"
+						th:classappend="${page == 'admin-allergens'} ? 'active'">Allergies</a>
+
+					<a th:href="@{/admin/users}" class="nav-link"
+						th:classappend="${page == 'admin-users'} ? 'active'">Users</a>
+				</div>
+			</nav>
+
+			<div class="user-profile-controls"
+				th:if="${session.loginUser != null}">
+				<button type="button" class="profile-dropdown-btn"
+					id="adminDropdownBtn">
+					<i class="bi bi-person-circle user-avatar-icon"></i> <span
+						class="welcome-user-name" th:text="${session.loginUser.name}">Admin</span>
+					<i class="bi bi-chevron-down dropdown-chevron"></i>
+				</button>
+
+				<div class="profile-dropdown-menu" id="adminDropdownMenu">
+					<a th:href="@{/admin/profile}" class="dropdown-item"> 
+						<i class="bi bi-person"></i> Profile
+					</a> 
+					<a th:if="${session.loginUser != null and session.loginUser.role.name() != 'SUPERADMIN'}"
+						th:href="@{/admin/profile/edit}" class="dropdown-item"> <i
+						class="bi bi-pencil-square"></i> Edit Profile
+					</a>
+
+					
+					<div class="dropdown-divider"></div>
+
+					<form th:action="@{/logout}" method="POST" style="margin: 0;">
+						<button type="submit" class="dropdown-item logout-text">
+							<i class="bi bi-box-arrow-right"></i> Log Out
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script>
+        (function() {
+            document.addEventListener('click', function(e) {
+            	const mobileToggle = e.target.closest('#mobileMenuToggle');
+				const headerRightMenu = document.getElementById('headerRightMenu');
+				
+				if (mobileToggle && headerRightMenu) {
+					e.stopPropagation();
+					headerRightMenu.classList.toggle('mobile-open');
+					const icon = mobileToggle.querySelector('i');
+					if (icon) {
+						icon.classList.toggle('bi-list');
+						icon.classList.toggle('bi-x');
+					}
+					return;
+				}
+                const btn = e.target.closest('#adminDropdownBtn');
+                const menu = document.getElementById('adminDropdownMenu');
+
+                if (btn && menu) {
+                    e.stopPropagation();
+                    menu.classList.toggle('show');
+                } else if (menu && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+        })();
+    </script>
+	</header>
+
+</body>
+</html>

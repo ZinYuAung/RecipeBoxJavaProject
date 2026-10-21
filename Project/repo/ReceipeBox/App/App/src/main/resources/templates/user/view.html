@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('User Profile — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/user-header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="detail-card">
+			<div class="form-title-area">
+				<h2>My Profile Information</h2>
+				<p>Manage your account credentials and personal information.</p>
+			</div>
+
+			<div class="detail-row">
+				<div class="detail-label">Full Name</div>
+				<div class="detail-value" th:text="${user.name}">John Doe</div>
+			</div>
+			<div class="detail-row">
+				<div class="detail-label">Email Address</div>
+				<div class="detail-value" th:text="${user.email}">john@example.com</div>
+			</div>
+			<div class="detail-row">
+				<div class="detail-label">Account Role</div>
+				<div class="detail-value" th:text="${user.role}">USER</div>
+			</div>
+			<!-- Associated Allergens Field -->
+			<div class="detail-row">
+				<div class="detail-label">Associated Allergens</div>
+				<div class="detail-value">
+					<span th:if="${#lists.isEmpty(userAllergies)}"
+						style="color: #64748b; font-size: 14px;">No allergy
+						associated</span> <span th:each="ua : ${userAllergies}"
+						th:text="${ua.allergen.name}" class="allergen-badge">Allergy</span>
+				</div>
+			</div>
+
+			<!-- Total Allergen Metric Count Field -->
+			<div class="detail-row">
+				<div class="detail-label">Total Count</div>
+				<div class="detail-value">
+					<span class="count-indicator"
+						th:text="${#lists.size(userAllergies) + ' Items'}">0 Items</span>
+				</div>
+			</div>
+
+			<div class="detail-row">
+				<div class="detail-label">Member Since</div>
+				<div class="detail-value"
+					th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}">
+					2026-07-15 15:00:00</div>
+			</div>
+
+			<div class="form-action-row">
+				<a th:href="@{/user/dashboard}" class="btn-global btn-secondary">
+					<i class="bi bi-arrow-left"></i>Back to Dashboard
+				</a> <a th:href="@{/user/profile/edit}" class="btn-global btn-primary"><i
+					class="bi bi-pencil-square"></i>Edit Profile </a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

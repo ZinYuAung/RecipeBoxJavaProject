@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Edit Allergy — RecipeBox')}">
+</head>
+<body> 
+<div
+		th:replace="~{fragments/admin-header :: global-header('admin-allergens')}"></div>
+	<main class="container">
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Edit Allergy</h2>
+				<p>Update the food allergy details in the system.</p>
+			</div>
+			<form th:action="@{/admin/allergy/update}" th:object="${allergen}"
+				method="POST">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<input type="hidden" th:field="*{allergenId}">
+
+				<div class="form-group">
+					<label class="form-label">Allergy Name</label> <input type="text" th:field="*{name}"
+						class="form-control">
+				<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" 
+						  style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;"></span>
+				</div>
+
+				<div class="form-action-row">
+					<a th:href="@{/admin/allergy/list}" class="btn-global btn-secondary">
+					<i class="bi bi-x-circle"></i>Cancel</a>
+					<button type="submit" class="btn-global btn-primary">
+					<i class="bi bi-check-circle-fill"></i>Update Allergy</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+</html>

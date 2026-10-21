@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Ingredients — RecipeBox')}">
+</head>
+<body>
+
+	<!-- Dynamic Global Navbar Fragment Header Component -->
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-ingredients')}"></div>
+
+	<main class="list-container">
+		<div th:if="${message}" id="alertMessage" class="alert-msg">
+			<i class="bi bi-check-circle-fill"></i> <span th:text="${message}">BMI
+				record deleted successfully!</span>
+		</div>
+		<!-- error,success alert box -->
+		<div th:if="${errorMessage}" id="errorAlert" class="alert-msg-danger">
+			<i class="bi bi-exclamation-triangle"></i> <span
+				th:text="${errorMessage}">Error message</span>
+		</div>
+		<!--  Header Frame Outside Card Box Container -->
+		<div class="crud-header">
+			<div class="crud-title">
+				<h2>Ingredients Management</h2>
+				<p>Manage raw foods, stock elements, and structural allergy
+					parameters.</p>
+			</div>
+
+			<!-- Right-side wrapper to group Search and Add Button together -->
+			<div
+				style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+
+				<!-- Main Filter Form (Keyword and Status) -->
+				<form th:action="@{/admin/ingredient/list}" method="GET"
+					id="filterForm"
+					style="display: flex; align-items: center; gap: 12px; margin-bottom: 0;">
+
+					<div class="global-search-box">
+						<!-- Orange Search Icon -->
+						<i class="bi bi-search"></i>
+
+						<!-- Search Input Field -->
+						<input type="text" id="searchInput" name="keyword"
+							th:value="${keyword}" class="form-control"
+							placeholder="Search ingredients..." aria-label="Search"
+							oninput="toggleClearButton(this)">
+
+						<!-- Clear Button Icon -->
+						<button type="button" id="clearBtn"
+							class="global-search-clear-btn" onclick="clearSearch(this)"
+							th:style="${keyword != null and !#strings.isEmpty(keyword)} ? 'display: block;' : 'display: none;'"
+							title="Clear search">
+							<i class="bi bi-x-circle-fill"></i>
+						</button>
+					</div>
+
+					<!-- Hidden Status tracker so status isn't lost if submitted elsewhere -->
+					<input type="hidden" name="status" th:value="${selectedStatus}">
+				</form>
+
+				<!-- Searchable Allergy Filter Dropdown Container (Independent form wrapper to avoid invalid nested HTML forms) -->
+				<div class="custom-search-dropdown">
+					<button type="button" class="dropdown-select-btn"
+						onclick="toggleSearchDropdown(event)">
+						<span id="dropdownBtnLabel"> <th:block
+								th:text="${selectedAllergy != null and !#lists.isEmpty(selectedAllergy)} ? ${#strings.listJoin(selectedAllergy, ', ')} : 'Filter by Allergy'">Filter by Allergy</th:block>
+						</span> <i class="bi bi-chevron-down"></i>
+					</button>
+					<div id="searchDropdownMenu" class="dropdown-content-box"
+						style="padding: 10px; min-width: 220px;">
+
+						<!-- Optional visual text search bar to filter long lists of checkboxes -->
+						<input type="text" class="dropdown-search-input"
+							id="innerSearchInput" placeholder="Search allergy..."
+							onkeyup="filterDropdownOptions(this)"
+							style="margin-bottom: 8px; width: 100%; padding: 6px; box-sizing: border-box;">
+
+						<!-- Checkbox Form Container -->
+						<form id="checkboxFilterForm" method="GET"
+							th:action="@{/admin/ingredient/list}" style="margin: 0;">
+
+							<!-- Keep existing keyword and status filters hidden so they aren't lost -->
+							<input type="hidden" name="keyword" th:value="${keyword}">
+							<input type="hidden" name="status" th:value="${selectedStatus}">
+
+							<div class="dropdown-items-list" id="dropdownItemsContainer"
+								style="max-height: 180px; overflow-y: auto;">
+
+								<!-- Reset Option (Clears all filters) -->
+								<div class="dropdown-option-item" style="padding: 4px 0;">
+									<a
+										th:href="@{/admin/ingredient/list(keyword=${keyword}, status=${selectedStatus})}"
+										style="text-decoration: none; color: var(--primary-color); font-weight: 600; display: block;">
+										Clear All Allergies </a>
+								</div>
+
+								<!-- Dynamically populated checkbox items loop with correct allergenId reference -->
+								<div class="dropdown-option-item"
+									th:each="allergy : ${allAllergens}"
+									style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">
+
+									<!-- onchange attribute removed so multiple boxes can be checked -->
+									<input type="checkbox" name="allergy"
+										th:value="${allergy.name}"
+										th:checked="${selectedAllergy != null and selectedAllergy.contains(allergy.name)}"
+										class="allergy-checkbox"
+										th:id="${'allergy_' + allergy.allergenId}"> <label
+										th:for="${'allergy_' + allergy.allergenId}"
+										th:text="${allergy.name}"
+										style="cursor: pointer; width: 100%; margin: 0;"></label>
+								</div>
+								<div
+									style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-color, #e2e8f0); text-align: right;">
+									<button type="submit" class="btn-global btn-primary"
+										style="padding: 4px 12px; font-size: 12px;">Apply
+										Filters</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- Status Dropdown (Active/Inactive) - Submits via standalone script or direct form wrapper -->
+				<select name="status" class="btn-global" id="statusSelectDropdown"
+					style="height: auto; border: 1.5px solid var(--primary-color); background-color: #ffffff; color: var(--primary-color); cursor: pointer; font-weight: 600; border-radius: 8px; padding: 8px 16px;"
+					onchange="updateStatusFilter(this)">
+					<option value="" style="background-color: #ffffff; color: #333333;">All
+						Statuses</option>
+					<option value="true" th:selected="${selectedStatus == true}"
+						style="background-color: #ffffff; color: #333333;">Active</option>
+					<option value="false" th:selected="${selectedStatus == false}"
+						style="background-color: #ffffff; color: #333333;">Inactive</option>
+				</select>
+
+				<!-- Add Button -->
+				<a th:href="@{/admin/ingredient/add}" class="btn-global btn-primary">➕
+					Add New Ingredient</a>
+			</div>
+		</div>
+
+		<!--  Clean Size Frame Container Card Layout with Responsive Scroll View -->
+		<div class="card-table-wrapper">
+			<div class="table-responsive">
+				<table class="global-table">
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>Ingredient Name</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Thymeleaf iteration entry row -->
+						<tr th:each="ingredient, stat : ${ingredients}">
+							<td th:text="${stat.count}">1</td>
+							<td th:text="${ingredient.name}">Fresh Garlic</td>
+							<td><span
+								th:if="${ingredient.isDeleted == null || !ingredient.isDeleted}"
+								class="badge badge-success">Active</span> <span
+								th:if="${ingredient.isDeleted != null && ingredient.isDeleted}"
+								class="badge badge-danger">Inactive</span></td>
+							<td>
+								<div class="btn-action-group"
+									style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap;">
+									<a
+										th:href="@{/admin/ingredient/view/{id}(id=${ingredient.ingredientId})}"
+										class="btn-global btn-secondary btn-pill-sm" title="View">
+										<i class="bi bi-eye"></i>View
+									</a> <a
+										th:href="@{/admin/ingredient/edit/{id}(id=${ingredient.ingredientId})}"
+										class="btn-global btn-primary btn-pill-sm" title="Edit"> <i
+										class="bi bi-pencil-square"></i> Edit
+									</a>
+									<button
+										th:if="${ingredient.isDeleted == null || !ingredient.isDeleted}"
+										type="button" class="btn-global btn-danger btn-pill-sm"
+										th:onclick="openDeleteCard([[${ingredient.ingredientId}]], [[${ingredient.name}]])">
+										<i class="bi bi-trash3"></i> Delete
+									</button>
+									<form
+										th:if="${ingredient.isDeleted != null && ingredient.isDeleted}"
+										th:action="@{/admin/ingredient/activate}" method="POST"
+										style="display: inline; margin: 0;">
+										<input type="hidden" name="id"
+											th:value="${ingredient.ingredientId}" />
+										<button type="submit"
+											class="btn-global btn-secondary btn-pill-sm btn-activate-text"
+											title="Activate">
+											<i class="bi bi-check-circle"></i> Activate
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+
+						<!-- Static Placeholder Fallback row when list database is empty -->
+						<tr th:if="${#lists.isEmpty(ingredients)}">
+							<td
+								style="font-weight: 500; text-align: center; color: #64748b; padding: 40px;"
+								colspan="4">No ingredients found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Modern Pill-Shaped Pagination Container (Stays at Bottom) -->
+		<div
+			style="display: flex; justify-content: center; margin-top: auto; padding-top: 20px; padding-bottom: 20px;">
+			<nav aria-label="Page navigation"
+				style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 50rem; padding: 6px 16px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 8px;">
+
+				<!-- Previous Button -->
+				<a th:if="${ingredientPage.hasPrevious()}"
+					th:href="@{/admin/ingredient/list(page=${ingredientPage.number - 1}, size=${ingredientPage.size}, keyword=${keyword}, allergy=${selectedAllergy}, status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&lt;</a>
+				<span th:unless="${ingredientPage.hasPrevious()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&lt;</span>
+
+				<!-- Page Numbers Loop (Compact View) -->
+				<th:block
+					th:with="current=${ingredientPage.number}, total=${ingredientPage.totalPages == 0 ? 1 : ingredientPage.totalPages}">
+					<span th:each="i : ${#numbers.sequence(0, total - 1)}"> <th:block
+							th:if="${i == 0 || i == total - 1 || (i >= current - 1 && i <= current + 1)}">
+							<a th:if="${i != current}"
+								th:href="@{/admin/ingredient/list(page=${i}, size=${ingredientPage.size}, keyword=${keyword}, allergy=${selectedAllergy}, status=${selectedStatus})}"
+								th:text="${i + 1}"
+								style="color: #4b5563; text-decoration: none; padding: 6px 10px; font-size: 14px; font-weight: 500; border-radius: 50%;">1</a>
+
+							<!-- Active Page Pill Style -->
+							<span th:if="${i == current}" th:text="${i + 1}"
+								style="background-color: #6366f1; color: #ffffff; padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 50rem; display: inline-block; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.4);">1</span>
+						</th:block> <!-- Ellipsis (...) --> <span
+						th:if="${(i == current - 2 && i > 0) || (i == current + 2 && i < total - 1)}"
+						style="color: #9ca3af; padding: 0 4px; font-size: 14px;">...</span>
+					</span>
+				</th:block>
+
+				<!-- Next Button -->
+				<a th:if="${ingredientPage.hasNext()}"
+					th:href="@{/admin/ingredient/list(page=${ingredientPage.number + 1}, size=${ingredientPage.size}, keyword=${keyword}, allergy=${selectedAllergy}, status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&gt;</a>
+				<span th:unless="${ingredientPage.hasNext()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&gt;</span>
+
+			</nav>
+		</div>
+	</main>
+
+	<!-- 3In-Frame Overlay Confirmation Modal Card Structure -->
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3
+				style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800; color: var(--dark-slate);">Confirm
+				Deletion</h3>
+			<p
+				style="margin: 0 0 24px 0; font-size: 14px; color: #64748b; line-height: 1.5;">
+				Are you sure you want to delete <strong id="modalTargetName"
+					style="color: var(--primary-color);">this item</strong>?
+			</p>
+
+			<!-- Submission context redirection box layer targeting your Controller's PostMapping -->
+			<form th:action="@{/admin/ingredient/delete}" method="POST"
+				id="deleteForm">
+				<!-- CSRF Token -->
+				<input type="hidden" th:name="${_csrf.parameterName}"
+					th:value="${_csrf.token}" /> <input type="hidden" name="id"
+					id="modalTargetId" value="">
+
+				<div
+					style="display: flex; justify-content: flex-end; border-top: none; gap: 12px;">
+					<button type="button" class="btn-global btn-secondary"
+						onclick="closeDeleteCard()">
+						<i class="bi bi-x-circle"></i>Cancel
+					</button>
+					<button type="submit" class="btn-global btn-danger">
+						<i class="bi bi-trash3"></i> Delete
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- JavaScript Toggle Controls Frame safely wrapped for Thymeleaf parsing -->
+	<script type="text/javascript" th:inline="javascript">
+		const modal = document.getElementById('deleteModal');
+		const modalIdInput = document.getElementById('modalTargetId');
+		const modalNameSpan = document.getElementById('modalTargetName');
+
+		function openDeleteCard(id, name) {
+			modalIdInput.value = id;
+			modalNameSpan.textContent = "'" + name + "'";
+
+			document.getElementById('deleteForm').action = '/admin/ingredient/delete/' + id;
+			modal.classList.add('active');
+		}
+
+		function closeDeleteCard() {
+			modal.classList.remove('active');
+		}
+
+		// Custom Searchable Dropdown Interactions
+		function toggleSearchDropdown(event) {
+			event.stopPropagation();
+			const dropdownMenu = document.getElementById('searchDropdownMenu');
+			dropdownMenu.classList.toggle('show');
+			if (dropdownMenu.classList.contains('show')) {
+				document.getElementById('innerSearchInput').focus();
+			}
+		}
+
+		function filterDropdownOptions(input) {
+			const filter = input.value.toLowerCase();
+			const items = document.getElementById('dropdownItemsContainer').getElementsByClassName('dropdown-option-item');
+			for (let i = 0; i < items.length; i++) {
+				let txtValue = items[i].textContent || items[i].innerText;
+				if (txtValue.toLowerCase().indexOf(filter) > -1) {
+					items[i].style.display = "";
+				} else {
+					items[i].style.display = "none";
+				}
+			}
+		}
+
+		// Handle Status change dynamically keeping parameters
+		function updateStatusFilter(selectElement) {
+			const urlParams = new URLSearchParams(window.location.search);
+			if (selectElement.value) {
+				urlParams.set('status', selectElement.value);
+			} else {
+				urlParams.delete('status');
+			}
+			window.location.href = window.location.pathname + '?' + urlParams.toString();
+		}
+
+		// Prevent dropdown from closing when clicking inside the checkbox menu elements or search box
+		document.addEventListener("DOMContentLoaded", function() {
+			const dropdownMenu = document.getElementById('searchDropdownMenu');
+			if (dropdownMenu) {
+				dropdownMenu.addEventListener('click', function(event) {
+					event.stopPropagation();
+				});
+			}
+		});
+
+		// Close dropdown when clicked outside
+		window.onclick = function(event) {
+			if (event.target === modal) {
+				closeDeleteCard();
+			}
+			if (!event.target.closest('.custom-search-dropdown')) {
+				const dropdowns = document.getElementsByClassName("dropdown-content-box");
+				for (let i = 0; i < dropdowns.length; i++) {
+					let openDropdown = dropdowns[i];
+					if (openDropdown.classList.contains('show')) {
+						openDropdown.classList.remove('show');
+					}
+				}
+			}
+		}
+
+		// Clear Search Input Scripts (triggered when searched/submitted)
+		function clearSearch(button) {
+			const inputGroup = button.parentNode;
+			const input = inputGroup.querySelector('input');
+			input.value = '';
+			button.style.display = 'none';
+			input.form.submit();
+		}
+		
+		setTimeout(() => {
+			const alert = document.getElementById("alertMessage");
+			if (alert) {
+				alert.classList.add("alert-msg-hide");
+				setTimeout(() => {
+					alert.remove();
+				}, 5000);
+			}
+		}, 700);
+		
+		setTimeout(() => {
+			const alert = document.getElementById("errorAlert");
+			if (alert) {
+				alert.classList.add("alert-msg-hide");
+				setTimeout(() => {
+					alert.remove();
+				}, 5000);
+			}
+		}, 700);
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>User Details — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>User Details</h2>
+				<p>
+					Viewing profile information for <span th:text="${user.name}">John
+						Doe</span>.
+				</p>
+			</div>
+
+			<div class="detail-container">
+				<div class="detail-row">
+					<div class="detail-label">Full Name</div>
+					<div class="detail-value" th:text="${user.name}">John Doe</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Email</div>
+					<div class="detail-value" th:text="${user.email}">john@example.com</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Role</div>
+					<div class="detail-value" th:text="${user.role}">Admin</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Created At</div>
+					<div class="detail-value"
+						th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-07-15
+						15:00:00</div>
+				</div>
+			</div>
+
+			<div class="form-action-row" style="margin-top: 20px;">
+
+				<a th:href="@{/admin/users}" class="btn-global btn-secondary">Back
+					to List</a> <a th:href="@{/admin/edit/{id}(id=${user.userId})}"
+					class="btn-global btn-primary">Edit User</a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

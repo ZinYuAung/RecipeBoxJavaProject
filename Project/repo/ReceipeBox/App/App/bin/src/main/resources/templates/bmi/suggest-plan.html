@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Suggested Plan — RecipeBox</title>
+    <link rel="stylesheet" th:href="@{/css/global-style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/meal-plan-style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/user-header :: global-header('bmi')}"></div>
+
+    <main class="container" style="margin-top: 24px;">
+        
+        <!-- Header with action button to save the entire plan -->
+        <div class="crud-header" style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div class="crud-title">
+                <h2>Your Personalized 7-Day Meal Plan</h2>
+                <p>Tailored specifically for your target category: <strong th:text="${bmiCategory}" th:style="${bmiCategory == 'NORMAL' ? 'color: green;' : 
+                       (bmiCategory == 'UNDERWEIGHT' ? 'color: blue;' : 
+                       (bmiCategory == 'OVERWEIGHT' ? 'color: orange;' : 'color: red;'))}">Normal</strong></p>
+            </div>
+            <div>
+                <form th:action="@{/user/meal-plans/save}" method="POST">
+                    <!-- Pass the current BMI category via hidden field to store in tier 2 table -->
+                    <input type="hidden" name="bmiCategory" th:value="${bmiCategory}">
+                    <button type="submit" class="btn-create" style="padding: 12px 24px; font-weight: 700; border-radius: 30px;">
+                        💾 Save This Plan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 7-DAY VERTICAL TIMELINE STACK -->
+        <div class="meal-timeline-stack">
+            
+            <!-- Loop through the 7 days -->
+            <div class="timeline-day-card" th:each="dayNum : ${#numbers.sequence(1, 7)}">
+                <div class="day-indicator">
+                    <h3>Day <span th:text="${dayNum}">1</span></h3>
+                </div>
+                
+                <div class="day-meals-grid">
+                    <!-- Loop through items that match the current day track -->
+                    <div th:each="item : ${suggestedItems}" th:if="${item.dayNumber == dayNum}" class="meal-slot-item">
+                        <div class="meal-type-badge" th:text="${item.mealType}">Breakfast</div>
+                        
+                        <div class="meal-mini-card">
+                            <img th:src="${#strings.isEmpty(item.recipe.imageUrl)} ? '/images/default-recipe.jpg' : ${item.recipe.imageUrl}" alt="Meal Graphic">
+                            <div class="mini-card-details">
+                                <h4 th:text="${item.recipe.name}">Recipe Name</h4>
+                                <span class="cooking-duration">⏱️ <span th:text="${item.recipe.cookingTimeMin}">20</span> Mins</span>
+                                <a th:href="@{/user/recipes/view/{id}(id=${item.recipe.recipeId})}" class="btn-view-recipe" style="font-size: 12px; margin-top: 6px;">View Details ➔</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

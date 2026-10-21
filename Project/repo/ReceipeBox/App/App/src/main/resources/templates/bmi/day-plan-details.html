@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Suggest Plan — RecipeBox')}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/user-header :: global-header('bmi')}"></div>
+
+	<main class="container">
+
+		<!-- Header & Navigation -->
+		<div
+			style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+			<div>
+
+				<h2
+					style="color: var(--dark-slate, #0f172a);">
+					Day <span th:text="${day}">1</span> Meal Plan
+				</h2>
+				<p style="color: #64748b; font-size: 14px; margin-top: 2px;">
+					Plan — Target
+					Category: <strong th:text="${savedPlan.bmiCategory}"
+						style="color: var(--primary-color, #2563eb);">NORMAL</strong>
+				</p>
+			</div>
+			<a th:href="@{/user/meal-plans/view/{id}(id=${savedPlan.planId})}"
+				style="text-decoration: none; color: var(--primary-color, #2563eb); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+				<i class="bi bi-arrow-left"></i> Back to 7-Day Overview
+			</a>
+		</div>
+
+		<!-- Meal Items Stack for the Day -->
+		<div class="meal-details-stack"
+			style="display: flex; flex-direction: column; gap: 20px;">
+
+			<div th:if="${dayItems != null and !dayItems.empty}"
+				th:each="item : ${dayItems}" class="day-detail-card">
+
+				<!-- Recipe Image Thumbnail -->
+				<div class="recipe-thumb-container">
+					<img
+						th:src="${#strings.isEmpty(item.recipe.imageUrl)} ? @{/images/default-recipe.jpg} : @{'/uploads/' + ${item.recipe.imageUrl}}"
+						alt="Recipe Image">
+				</div>
+
+				<!-- Recipe Meta & Description -->
+				<div class="recipe-content-box">
+					<div
+						style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+						<span class="meal-type-badge"
+							style="position: static; font-size: 11px; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em;"
+							th:text="${item.mealType}">BREAKFAST</span> <span
+							style="font-size: 13px; color: #64748b; font-weight: 600;">
+							⏱️ <span th:text="${item.recipe.cookingTimeMin}">20</span> mins
+						</span>
+					</div>
+
+					<h3
+						style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+						<a
+							th:href="@{/user/recipe-view/{id}(id=${item.recipe.recipeId})}"
+							style="text-decoration: none; color: inherit;"
+							th:text="${item.recipe.name}">Grilled Chicken Salad</a>
+					</h3>
+
+					<p
+						style="color: #475569; font-size: 14px; line-height: 1.6; margin-bottom: 14px;"
+						th:text="${#strings.abbreviate(item.recipe.description, 150)}">
+						Fresh greens with tender grilled chicken breast...</p>
+
+					<a
+						th:href="@{/user/recipe-view/{id}(id=${item.recipe.recipeId})}"
+						class="btn-global btn-primary"
+						style="font-size: 12px; padding: 6px 16px; border-radius: 20px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+						View Recipe & Instructions ➔ </a>
+				</div>
+			</div>
+
+			<!-- Empty State -->
+			<div th:if="${dayItems == null or dayItems.empty}"
+				style="text-align: center; padding: 48px 20px; background: #fff; border-radius: 16px; border: 1px solid var(--border-color, #e2e8f0);">
+				<span style="font-size: 40px; display: block; margin-bottom: 8px;">🍽️</span>
+				<h3 style="font-weight: 700; color: #0f172a;">
+					No items found for Day <span th:text="${day}">1</span>
+				</h3>
+				<p style="color: #64748b; margin-top: 4px;">There are no
+					assigned meals for this day in this plan.</p>
+			</div>
+
+		</div>
+
+	</main>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>BMI Result</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<style>
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.modal-card {
+	background: white;
+	padding: 30px;
+	border-radius: 20px;
+	width: 90%;
+	max-width: 400px;
+	text-align: center;
+}
+
+.color-blue {
+	color: #3b82f6;
+}
+
+.color-green {
+	color: #22c55e;
+}
+
+.color-yellow {
+	color: #eab308;
+}
+
+.color-red {
+	color: #ef4444;
+}
+
+.badge {
+	display: inline-block;
+	padding: 6px 25px;
+	border-radius: 50px;
+	color: white;
+	font-weight: bold;
+	margin: 15px 0;
+}
+
+.bg-blue {
+	background-color: #3b82f6;
+}
+
+.bg-green {
+	background-color: #22c55e;
+}
+
+.bg-yellow {
+	background-color: #eab308;
+}
+
+.bg-red {
+	background-color: #ef4444;
+}
+
+.btn-save-blue {
+	background-color: #3b82f6 !important;
+	color: white !important;
+}
+
+.btn-save-green {
+	background-color: #22c55e !important;
+	color: white !important;
+}
+
+.btn-save-yellow {
+	background-color: #eab308 !important;
+	color: white !important;
+}
+
+.btn-save-red {
+	background-color: #ef4444 !important;
+	color: white !important;
+}
+</style>
+</head>
+<body>
+
+	<div id="resultModal" class="modal-overlay active">
+		<div class="modal-card">
+			<h2 th:classappend="${cssClass}">Your BMI Result</h2>
+
+			<h1 style="font-size: 56px; margin: 0;" th:text="${bmiResult}">0.0</h1>
+
+			<div th:class="${'badge ' + cssClass.replace('color', 'bg')}"
+				th:text="${category}"></div>
+
+			<p style="color: #666; margin-bottom: 25px;">Weight:
+				[[${weight}]] kg | Height: [[${height}]] cm</p>
+
+			<form th:action="@{/user/bmi/save}" method="POST">
+				<input type="hidden" name="bmiValue" th:value="${bmiResult}">
+				<input type="hidden" name="category" th:value="${category}">
+				<input type="hidden" name="userId" th:value="${userId}"> <input
+					type="hidden" name="age" th:value="${age}"> <input
+					type="hidden" name="gender" th:value="${gender}">
+
+				<div style="display: flex; flex-direction: column; gap: 10px;">
+					<!-- route change -->
+					<a th:href="@{/user/meal-plans/suggest(category=${category})}"
+						class="btn-global btn-primary">Suggest Plan</a>
+
+					<button type="submit"
+						th:classappend="${cssClass.replace('color', 'btn-save')}"
+						class="btn-global">Save Record</button>
+					<a th:href="@{/user/bmi/bmiForm}" class="btn-global btn-secondary">Cancel</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

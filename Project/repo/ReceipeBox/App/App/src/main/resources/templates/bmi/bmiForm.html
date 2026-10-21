@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Bmi — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/user-header :: global-header('/user/bmi')}"></div>
+
+	<main class="container">
+		<div class="form-card" style="max-width: 500px; margin: 0 auto;">
+			<div class="form-title-area"
+				style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+				<div>
+					<h2>BMI Calculator</h2>
+					<p style="margin-bottom: 0;">Enter your weight and height to
+						calculate your Body Mass Index.</p>
+				</div>
+				<!-- Unit Selector (Imperial / Metric) -->
+				<div
+					style="display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px;">
+					<button type="button" id="imperialBtn"
+						onclick="setUnit('imperial')"
+						style="background: transparent; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #64748b; font-size: 14px;">Imperial</button>
+					<button type="button" id="metricBtn" onclick="setUnit('metric')"
+						style="background: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #1e293b; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); font-size: 14px;">Metric</button>
+				</div>
+			</div>
+
+			<form th:action="@{/user/bmi/calculate}" th:object="${bmiForm}"
+				method="POST">
+
+				<!-- Hidden Unit Field -->
+				<input type="hidden" name="unit" id="unitInput"
+					th:value="${currentUnit != null ? currentUnit : (param.unit != null ? param.unit : 'metric')}">
+				<input type="hidden" name="userId" th:value="${userId}">
+
+				<div class="form-group">
+					<label class="form-label" id="weightLabel">Weight (kg)</label> <input
+						type="number" th:field="*{weight}" min="0.01" step="any"
+						class="form-control" id="weightInputField"
+						placeholder="e.g. 70 or 70.50"> <span
+						th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"
+						style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<!-- Height Field -->
+				<div class="form-group">
+					<label class="form-label" id="heightLabel">Height (cm)</label>
+
+					<!-- Metric Height Input (cm) -->
+					<div id="metricHeightContainer">
+						<input type="number" th:field="*{height}" min="1" step="any"
+							class="form-control" placeholder="e.g. 175">
+					</div>
+
+					<!-- Imperial Height Input (ft & in) -->
+					<div id="imperialHeightContainer"
+						style="display: none; display: flex; gap: 10px;">
+						<div style="flex: 1;">
+							<input type="number" name="feet" min="0" step="1"
+								class="form-control" id="feetInput" placeholder="Feet (ft)"
+								th:value="${feetValue}">
+						</div>
+						<div style="flex: 1;">
+							<input type="number" name="heightInches" min="0" max="11"
+								step="any" class="form-control" id="inchesInput"
+								placeholder="Inches (in)" th:value="${inchesValue}">
+						</div>
+					</div>
+
+					<!--  Imperial, Error Message -->
+					<span th:if="${#fields.hasErrors('feet')}" th:errors="*{feet}"
+						style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;"></span>
+
+					<!-- Metric, Error Message -->
+					<span th:if="${#fields.hasErrors('height')}" th:errors="*{height}"
+						style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<!-- age,gender -->
+				<div class="form-group">
+					<label class="form-label">Age</label> <input type="number"
+						th:field="*{age}" min="1" step="1" class="form-control"
+						placeholder="e.g. 25"> <span
+						th:if="${#fields.hasErrors('age')}" th:errors="*{age}"
+						style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Gender</label>
+					<div style="display: flex; gap: 20px; margin-top: 8px;">
+						<label style="cursor: pointer;"> <input type="radio"
+							th:field="*{gender}" value="Male"> Male
+						</label> <label style="cursor: pointer;"> <input type="radio"
+							th:field="*{gender}" value="Female"> Female
+						</label>
+					</div>
+					<span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"
+						style="color: #dc2626; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+
+				<div class="form-group"
+					th:if="${allAllergens != null and !#lists.isEmpty(allAllergens)}">
+					<label class="form-label">Associated Allergens</label>
+					<div
+						style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background-color: #f8fafc; width: 100%; box-sizing: border-box;">
+						<div
+							style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+							<div th:each="allergen : ${allAllergens}"
+								style="display: flex; align-items: center; gap: 8px;">
+								<input type="checkbox" name="allergenIds"
+									th:value="${allergen.allergenId}"
+									th:id="'allergen_' + ${allergen.allergenId}"
+									th:checked="${userAllergenIds != null and userAllergenIds.contains(allergen.allergenId)}"
+									style="accent-color: var(--primary-color); width: 16px; height: 16px; cursor: pointer;">
+								<label th:for="'allergen_' + ${allergen.allergenId}"
+									style="font-size: 14px; color: #334155; cursor: pointer; font-weight: 500;"
+									th:text="${allergen.name}">Allergy Name</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-action-row">
+					<a th:href="@{/user/bmi}" class="btn-global btn-secondary">Cancel</a>
+					<button type="submit" class="btn-global btn-primary">Calculate
+						BMI</button>
+				</div>
+			</form>
+		</div>
+	</main>
+	<!-- JavaScript for Dynamic Unit Switch (Metric vs Imperial) -->
+	<script>
+		function setUnit(unit) {
+			const unitInput = document.getElementById('unitInput');
+			const imperialBtn = document.getElementById('imperialBtn');
+			const metricBtn = document.getElementById('metricBtn');
+
+			const heightLabel = document.getElementById('heightLabel');
+			const weightLabel = document.getElementById('weightLabel');
+
+			const metricHeightContainer = document
+					.getElementById('metricHeightContainer');
+			const imperialHeightContainer = document
+					.getElementById('imperialHeightContainer');
+			const weightInput = document.getElementById('weightInputField');
+
+			unitInput.value = unit;
+
+			if (unit === 'imperial') {
+				imperialBtn.style.background = '#ffffff';
+				imperialBtn.style.color = '#1e293b';
+				imperialBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+				metricBtn.style.background = 'transparent';
+				metricBtn.style.color = '#64748b';
+				metricBtn.style.boxShadow = 'none';
+
+				heightLabel.textContent = 'Height (ft / in)';
+				weightLabel.textContent = 'Weight (lb)';
+
+				metricHeightContainer.style.display = 'none';
+				imperialHeightContainer.style.display = 'flex';
+
+				weightInput.placeholder = 'e.g. 154';
+			} else {
+				metricBtn.style.background = '#ffffff';
+				metricBtn.style.color = '#1e293b';
+				metricBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+
+				imperialBtn.style.background = 'transparent';
+				imperialBtn.style.color = '#64748b';
+				imperialBtn.style.boxShadow = 'none';
+
+				heightLabel.textContent = 'Height (cm)';
+				weightLabel.textContent = 'Weight (kg)';
+
+				metricHeightContainer.style.display = 'block';
+				imperialHeightContainer.style.display = 'none';
+
+				weightInput.placeholder = 'e.g. 70 or 70.50';
+			}
+		}
+
+		// if Error,when return on Form  or Page Load ,show correctly Hidden unit 's values
+		document.addEventListener("DOMContentLoaded", function() {
+			const currentUnit = document.getElementById('unitInput').value;
+			setUnit(currentUnit);
+		});
+	</script>
+</body>
+</html>

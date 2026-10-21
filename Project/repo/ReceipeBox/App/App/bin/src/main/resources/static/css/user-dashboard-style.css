@@ -1,0 +1,224 @@
+/* ==========================================================================
+   6. USER RECIPE DASHBOARD SHOWCASE STYLES 
+   ========================================================================== */
+
+/* Category Selection Pills Layout */
+.meal-type-pills {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.meal-type-pills .pill-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.meal-type-pills .pill-badge:hover {
+  background-color: #e2e8f0;
+  color: var(--dark-slate);
+}
+.meal-type-pills .pill-badge.active {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+}
+
+/* Asymmetrical CSS Grid Management */
+.recipe-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  width: 100%;
+}
+
+/* Master Shared Base Card Parameters */
+.recipe-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.recipe-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Left/Top Highlight Card takes up 2 structural structural tracks */
+.recipe-card.large-feature-card {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+/* Standard Secondary Layout Cards */
+.recipe-card.standard-card {
+  grid-column: span 1;
+}
+
+/* Box Graphic Aspect Handlers */
+.card-image-box {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+/* Scale large feature container image dynamically */
+.large-feature-card .card-image-box {
+  height: 280px;
+}
+.standard-card .card-image-box {
+  height: 200px;
+}
+
+.card-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.recipe-card:hover .card-image-box img {
+  transform: scale(1.04);
+}
+
+/* Overlay Badge Tags styling */
+.card-floating-tag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Text Core Container Box Padding */
+.card-details-box {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.meta-row-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+.meta-row-top .cooking-duration {
+  color: var(--primary-color);
+}
+
+.recipe-display-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--dark-slate);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.large-feature-card .recipe-display-title {
+  font-size: 24px;
+}
+
+.recipe-display-desc {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Navigation Inline Button Triggers */
+.card-action-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+.btn-view-recipe {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-slate);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+.btn-view-recipe span {
+  transition: transform 0.2s ease;
+}
+.btn-view-recipe:hover {
+  color: var(--primary-color);
+}
+.btn-view-recipe:hover span {
+  transform: translateX(4px);
+}
+
+/* Complete Responsive Layout Handling for Smaller Devices */
+@media (max-width: 992px) {
+  .recipe-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .recipe-card.large-feature-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .recipe-showcase-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .recipe-card.large-feature-card {
+    grid-column: span 1;
+  }
+  .large-feature-card .card-image-box {
+    height: 200px;
+  }
+  .crud-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.card-action-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.btn-favorite-heart{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    font-size:26px;
+    color:#ef4444;
+}
+
+.btn-favorite-heart:hover{
+    color:#dc2626;
+    transform:scale(1.15);
+    transition:.2s;
+}

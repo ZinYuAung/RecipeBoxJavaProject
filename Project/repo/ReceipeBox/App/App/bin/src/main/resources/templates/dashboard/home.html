@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> <!-- 💡 Spring Security Extras ပါဝင်သည် -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Box - FlavorFold</title>
+
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/alert.css}">
+</head>
+<body>
+
+	<!-- 💡 သင့် Project Structure အရ fragments folder သည် templates/fragments/header.html တွင် ရှိသဖြင့် လမ်းကြောင်းကို ဤသို့ တိကျစွာ ခေါ်ယူပါသည် -->
+	<div th:replace="~{fragments/header :: global-header('home')}"></div>
+
+	<!-- Logout အောင်မြင်လျှင် ပြသမည့် Alert Modal -->
+	<div th:if="${param.logout}" id="logoutModal" class="modal-overlay active">
+		<div class="modal-card">
+			<span class="modal-icon">👋</span>
+			<h3 class="modal-title">Logged Out</h3>
+			<p class="modal-text">
+				You have been successfully logged out.<br>See you again soon in
+				FlavorFold!
+			</p>
+		</div>
+	</div>
+
+	<!-- Hero Section (သပ်ရပ်လှပစေရန် Inline Style ကို Thymeleaf standard အတိုင်း ရေးသားထားပါသည်) -->
+	<section class="hero-section"
+		th:style="'background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.5)), url(' + @{/uploads/home-bg.jpg} + ');'">
+		<div class="hero-content">
+			<h1>
+				Discover & Save Your<br>Favorite Recipes
+			</h1>
+			<p>Explore thousands of easy-to-follow recipes, organize your
+				collection, and create meal plans with ease.</p>
+
+		
+			<div class="cta-area">
+			
+				<a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="cta-btn">
+					Go to Admin Dashboard <span class="arrow">→</span>
+				</a>
+				
+			
+				<a sec:authorize="hasRole('USER')" th:href="@{/user/dashboard}" class="cta-btn">
+					Go to Dashboard <span class="arrow">→</span>
+				</a>
+			
+				<a sec:authorize="isAnonymous()" th:href="@{/signup}" class="cta-btn">
+					Get Started <span class="arrow">→</span>
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- Features Section -->
+	<section class="features-container">
+		<div class="feature-card">
+			<div class="icon blue-icon">🔍</div>
+			<h3>Browse Recipes</h3>
+			<p>Browse your favorite recipes, build your personalized recipe
+				book and collections.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon yellow-icon">📁</div>
+			<h3>Save & Organize</h3>
+			<p>Explore thousands of easy-to-follow recipes, organize your
+				collection, and save with ease.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon calendar-icon">📅</div>
+			<h3>Plan Meals</h3>
+			<p>Create custom, healthy meal plans tailored perfectly to your
+				diet and calendar goals.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon link-icon">🔗</div>
+			<h3>Share with Friends</h3>
+			<p>Share your favorite recipes with your friends and family
+				directly from the app.</p>
+		</div>
+	</section>
+
+	<script th:if="${param.logout}">
+    window.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('logoutModal');
+        
+        if (modal) {
+            setTimeout(() => {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 200);
+            }, 3000); 
+        }
+    });
+  </script>
+
+</body>
+</html>

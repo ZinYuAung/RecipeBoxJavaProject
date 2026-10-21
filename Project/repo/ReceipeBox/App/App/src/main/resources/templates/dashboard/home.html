@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('VitalBite — RecipeBox')}">
+</head> 
+
+<style>
+.interactive-card:hover {
+	transform: translateY(-6px);
+	box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.12) !important;
+	border-color: var(--primary-color) !important;
+}
+.preview-badge {
+	display: inline-block;
+	margin-top: 12px;
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--primary-color);
+	background: #f0fdf4;
+	padding: 4px 10px;
+	border-radius: 12px;
+	border: 1px solid #bbf7d0;
+	opacity: 0.85;
+	transition: opacity 0.2s;
+}
+.interactive-card:hover .preview-badge {
+	opacity: 1;
+	background: var(--primary-color);
+	color: white;
+}
+</style>
+
+<body>
+ 
+	<div th:replace="~{fragments/header :: global-header('home')}"></div>
+ 
+	<!-- Logout Success Modal -->
+	<div th:if="${param.logout}" id="logoutModal"
+		class="modal-overlay active">
+		<div class="modal-card">
+			<span class="modal-icon">👋</span>
+			<h3 class="modal-title">Logged Out</h3>
+			<p class="modal-text">
+				You have been successfully logged out.<br>See you again soon in
+				VitalBite!
+			</p>
+		</div>
+	</div>
+ 
+	<!-- Hero Section -->
+	<section class="hero-section"
+		th:style="'background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.7)), url(' + @{/uploads/home-bg.jpg} + ');'">
+		<div class="hero-content">
+			<h1>
+				Discover & Save Your<br>Favorite Recipes
+			</h1>
+			<p>Explore thousands of easy-to-follow recipes, calculate your
+				personalized BMI goals, and generate custom 7-day meal tracks with
+				ease.</p>
+ 
+			<div class="cta-area" style="margin-top: 24px;">
+				<a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}"
+					class="cta-btn"> Go to Admin Dashboard <span class="arrow">→</span>
+				</a> <a sec:authorize="hasRole('USER')" th:href="@{/user/dashboard}"
+					class="cta-btn"> Go to Dashboard <span class="arrow">→</span>
+				</a> <a sec:authorize="isAnonymous()" th:href="@{/login}"
+					class="cta-btn"> Get Started Free <span class="arrow">→</span>
+				</a>
+			</div>
+		</div>
+	</section>
+ 
+	<main class="container"
+		style="margin-top: -40px; position: relative; z-index: 10;">
+		
+		<!-- Interactive Feature Cards Section -->
+		<section class="features-container"
+			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+
+			<!-- Card 1: Browse Recipes -->
+			<div class="feature-card card-table-wrapper interactive-card"
+				style="padding: 24px; text-align: center; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease;"
+				onclick="openFeaturePreview('Browse Recipes', 'Find healthy meals filtered by cooking time, dietary parameters, and meal categories.', 'recipe-preview')">
+				<div class="icon blue-icon" style="font-size: 32px; margin-bottom: 12px;">🔍</div>
+				<h3 style="color: var(--dark-slate); font-weight: 700;">Browse Recipes</h3>
+				<p style="color: #64748b; font-size: 14px;">Find healthy meals filtered by cooking time, dietary parameters, and meal categories.</p>
+				<span class="preview-badge">Click to preview 👁️</span>
+			</div>
+
+			<!-- Card 2: BMI Health Metrics -->
+			<div class="feature-card card-table-wrapper interactive-card"
+				style="padding: 24px; text-align: center; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease;"
+				onclick="openFeaturePreview('BMI Health Metrics', 'Calculate your body index instantly and receive tailored daily caloric guidelines.', 'bmi-preview')">
+				<div class="icon yellow-icon" style="font-size: 32px; margin-bottom: 12px;">⚖️</div>
+				<h3 style="color: var(--dark-slate); font-weight: 700;">BMI Health Metrics</h3>
+				<p style="color: #64748b; font-size: 14px;">Calculate your body index instantly and receive tailored daily caloric guidelines.</p>
+				<span class="preview-badge">Click to preview 👁️</span>
+			</div>
+
+			<!-- Card 3: 7-Day Meal Tracks -->
+			<div class="feature-card card-table-wrapper interactive-card"
+				style="padding: 24px; text-align: center; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease;"
+				onclick="openFeaturePreview('7-Day Meal Tracks', 'Automatically generate and archive personalized weekly meal routines.', 'mealplan-preview')">
+				<div class="icon calendar-icon" style="font-size: 32px; margin-bottom: 12px;">📅</div>
+				<h3 style="color: var(--dark-slate); font-weight: 700;">7-Day Meal Tracks</h3>
+				<p style="color: #64748b; font-size: 14px;">Automatically generate and archive personalized weekly meal routines aligned with your goals.</p>
+				<span class="preview-badge">Click to preview 👁️</span>
+			</div>
+
+			<!-- Card 4: Save & Favorite -->
+			<div class="feature-card card-table-wrapper interactive-card"
+				style="padding: 24px; text-align: center; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease;"
+				onclick="openFeaturePreview('Save & Favorite', 'Build your private cookbook collection to keep your favorite recipes handy.', 'favorite-preview')">
+				<div class="icon link-icon" style="font-size: 32px; margin-bottom: 12px;">❤️</div>
+				<h3 style="color: var(--dark-slate); font-weight: 700;">Save & Favorite</h3>
+				<p style="color: #64748b; font-size: 14px;">Build your private cookbook collection to keep your favorite recipes just a click away.</p>
+				<span class="preview-badge">Click to preview 👁️</span>
+			</div>
+		</section>
+
+		<!-- Pop-up Modal for Sample Dashboard Previews -->
+		<div id="featurePreviewModal" class="feature-preview-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+			<div class="modal-card" style="background: white; border-radius: 16px; width: 90%; max-width: 550px; padding: 24px; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
+				<button onclick="closeFeaturePreview()" style="position: absolute; top: 16px; right: 16px; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; color: #64748b;">✕</button>
+				
+				<h3 id="modalFeatureTitle" style="color: var(--dark-slate); font-weight: 800; font-size: 20px; margin-bottom: 6px;">Feature Title</h3>
+				<p id="modalFeatureDesc" style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Feature description will appear here.</p>
+				
+				<!-- Dynamic Sample Visual Container -->
+				<div id="modalPreviewContent" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; min-height: 180px; display: flex; align-items: center; justify-content: center;">
+					<!-- Injected dynamically by JS -->
+				</div>
+			</div>
+		</div>
+
+		<!-- SPOTLIGHT: Nutrition & Meal Planning Preview -->
+		<section
+			style="margin-top: 60px; background: #ffffff; border-radius: 20px; padding: 40px; border: 1px solid var(--border-color); display: flex; flex-wrap: wrap; align-items: center; gap: 40px;">
+			<div style="flex: 1; min-width: 300px;">
+				<span
+					style="color: var(--primary-color); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Smart
+					Feature</span>
+				<h2
+					style="color: var(--dark-slate); font-size: 28px; font-weight: 800; margin: 8px 0 16px;">Automated
+					7-Day Meal Generation</h2>
+				<p style="color: #64748b; line-height: 1.6; margin-bottom: 20px;">
+					Take the stress out of weekly grocery planning. VitalBite matches
+					your active BMI category with our recipe database to curate
+					balanced daily meal schedules for Breakfast, Lunch, and Dinner.</p>
+				<a th:href="@{/signup}" class="btn-create"
+					style="display: inline-block; text-decoration: none; padding: 10px 20px;">Try
+					Meal Planner ➔</a>
+			</div>
+ 
+			<div
+				style="flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+				<div
+					style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 700;">
+					<span>📋 Demo Nutrition Track</span> <span
+						style="color: var(--primary-color);">Normal Category</span>
+				</div>
+				<div
+					style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; display: flex; gap: 12px; align-items: center;">
+					<span
+						style="background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 10px;">DAY
+						1</span>
+					<div>
+						<strong>Avocado Toast & Eggs</strong> — Breakfast
+					</div>
+				</div>
+				<div
+					style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; display: flex; gap: 12px; align-items: center;">
+					<span
+						style="background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 10px;">DAY
+						1</span>
+					<div>
+						<strong>Grilled Chicken Salad</strong> — Lunch
+					</div>
+				</div>
+				<div
+					style="background: white; padding: 12px; border-radius: 8px; font-size: 13px; display: flex; gap: 12px; align-items: center;">
+					<span
+						style="background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 10px;">DAY
+						1</span>
+					<div>
+						<strong>Baked Salmon & Quinoa</strong> — Dinner
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- TEAM SECTION -->
+		<section id="team" style="margin-top: 60px; text-align: center;">
+			<span style="color: var(--primary-color); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">Development Team</span>
+			<h2 style="color: var(--dark-slate); font-weight: 800; font-size: 26px; margin-top: 4px; margin-bottom: 24px;">Meet the Creators</h2>
+			
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+				
+				<!-- Leader (Zin Yu Aung) -->
+				<div class="feature-card card-table-wrapper" style="padding: 20px; text-align: center; border-top: 4px solid var(--primary-color);">
+					<div style="margin-bottom: 12px;">
+						<img th:src="@{/uploads/zya_img.jpg}" alt="Zin Yu Aung" 
+							 style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+					</div>
+					<h4 style="color: var(--dark-slate); font-weight: 700; margin-bottom: 2px;">Zin Yu Aung</h4>
+					<span style="background: var(--primary-color); color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Team Leader</span>
+					<p style="color: #64748b; font-size: 12px; margin-top: 8px;">Project Management & Lead Developer</p>
+				</div>
+
+				<!-- Member 1 (Myat Noe Khin) -->
+				<div class="feature-card card-table-wrapper" style="padding: 20px; text-align: center; border-top: 4px solid var(--primary-color);">
+					<div style="margin-bottom: 12px;">
+						<img th:src="@{/uploads/mnk_img.jpg}" alt="Myat Noe Khin" 
+							 style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+					</div>
+					<h4 style="color: var(--dark-slate); font-weight: 700; margin-bottom: 2px;">Myat Noe Khin</h4>
+					<span style="background: var(--primary-color); color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Developer</span>
+					<p style="color: #64748b; font-size: 12px; margin-top: 8px;">Full Stack & Feature Developer</p>
+				</div>
+
+				<!-- Member 2 (Kaung Sett Naing) -->
+				<div class="feature-card card-table-wrapper" style="padding: 20px; text-align: center; border-top: 4px solid var(--primary-color);">
+					<div style="margin-bottom: 12px;">
+						<img th:src="@{/uploads/ksn_img.jpg}" alt="Kaung Sett Naing" 
+							 style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+					</div>
+					<h4 style="color: var(--dark-slate); font-weight: 700; margin-bottom: 2px;">Kaung Sett Naing</h4>
+					<span style="background: var(--primary-color); color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Developer</span>
+					<p style="color: #64748b; font-size: 12px; margin-top: 8px;">Full Stack & Feature Developer</p>
+				</div>
+
+				<!-- Member 3 (Thin Zar Win Khing) -->
+				<div class="feature-card card-table-wrapper" style="padding: 20px; text-align: center; border-top: 4px solid var(--primary-color);">
+					<div style="margin-bottom: 12px;">
+						<img th:src="@{/uploads/tzwk_img.jpg}" alt="Thin Zar Win Khing"
+							 style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+					</div>
+					<h4 style="color: var(--dark-slate); font-weight: 700; margin-bottom: 2px;">Thin Zar Win Khing</h4>
+					<span style="background: var(--primary-color); color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Developer</span>
+					<p style="color: #64748b; font-size: 12px; margin-top: 8px;">UI/UX Design & Frontend Integration</p>
+				</div>
+
+			</div>
+		</section>
+ 
+		<!-- ABOUT SECTION -->
+		<section id="about"
+			style="margin-top: 60px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+			<h2
+				style="color: var(--dark-slate); font-weight: 800; font-size: 26px;">About
+				VitalBite</h2>
+			<p
+				style="color: #64748b; font-size: 15px; line-height: 1.7; margin-top: 12px;">
+				VitalBite was created to simplify home cooking and meal
+				organization. Developed by our dedicated engineering team as part of the RecipeBox initiative, whether you're tracking fitness targets, managing a
+				busy weekday routine, or archiving family recipes, our platform
+				gives you the tools to eat well and live healthier.</p>
+		</section>
+
+		<footer id="contact"
+			style="margin-top: 80px; padding: 40px 0; border-top: 1px solid var(--border-color); color: #64748b; font-size: 14px;">
+			<div
+				style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; margin-bottom: 30px;">
+
+				<!-- Brand Info -->
+				<div>
+					<h3
+						style="color: var(--dark-slate); font-weight: 800; margin-bottom: 8px;">VitalBite</h3>
+					<p style="max-width: 280px; margin: 0;">Your personal recipe
+						book & daily nutrition planner.</p>
+				</div>
+
+				<!-- Refined Telegram Bot Section -->
+				<div>
+					<h3
+						style="color: var(--dark-slate); font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+						<!-- Telegram Icon SVG -->
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+							xmlns="http://www.w3.org/2000/svg">
+					<path
+								d="M12 0C5.37 0 0 5.37 0 12C0 18.63 5.37 24 12 24C18.63 24 24 18.63 24 12C24 5.37 18.63 0 12 0ZM17.89 8.22L15.87 17.75C15.72 18.41 15.33 18.57 14.78 18.26L11.7 15.99L10.21 17.42C10.05 17.58 9.91 17.72 9.6 17.72L9.82 14.57L15.56 9.39C15.81 9.17 15.5 9.04 15.17 9.26L8.08 13.72L5.03 12.76C4.37 12.56 4.35 12.1 5.17 11.78L17.08 7.19C17.63 6.99 18.11 7.32 17.89 8.22Z"
+								fill="#0088CC" />
+				</svg>
+						Telegram Assistant
+					</h3>
+					<p style="max-width: 280px; margin-bottom: 12px; line-height: 1.4;">
+						Get daily meal plans, random recipe picks, and calculate your BMI
+						on the go.</p>
+					<a href="https://t.me/your_recipebox_bot" target="_blank"
+						style="display: inline-flex; align-items: center; gap: 6px; background-color: #0088CC; color: #ffffff; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; transition: opacity 0.2s;">
+						Start Telegram Bot ➔ </a>
+				</div>
+
+				<!-- Quick Links -->
+				<div>
+					<strong
+						style="color: var(--dark-slate); display: block; margin-bottom: 8px;">Quick
+						Links</strong>
+					<ul
+						style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+						<li><a th:href="@{/login}"
+							style="color: inherit; text-decoration: none;">Login</a></li>
+						<li><a th:href="@{/signup}"
+							style="color: inherit; text-decoration: none;">Sign Up</a></li>
+						<li><a href="#about"
+							style="color: inherit; text-decoration: none;">About Us</a></li>
+						<li><a href="#team"
+							style="color: inherit; text-decoration: none;">Our Team</a></li>
+					</ul>
+				</div>
+
+				<!-- Contact Support -->
+				<div>
+					<strong
+						style="color: var(--dark-slate); display: block; margin-bottom: 8px;">Contact
+						Support</strong>
+					<p style="margin: 0 0 6px 0;">📧 support@vitalbite.com</p>
+					<p style="margin: 0;">📍 RecipeBox Application Studio</p>
+				</div>
+			</div>
+
+			<!-- Copyright Bar -->
+			<div
+				style="text-align: center; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 12px;">
+				© 2026 VitalBite — RecipeBox Application. All rights reserved.</div>
+		</footer>
+
+	</main>
+ 
+	<script th:if="${param.logout}">
+        window.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('logoutModal');
+            if (modal) {
+                setTimeout(() => {
+                    modal.classList.remove('active');
+                    setTimeout(() => modal.remove(), 200);
+                }, 3000);
+            }
+        });
+    </script>
+    
+    <!-- JavaScript to Handle Feature Popups -->
+	<script>
+	function openFeaturePreview(title, desc, contentType) {
+		document.getElementById('modalFeatureTitle').innerText = title;
+		document.getElementById('modalFeatureDesc').innerText = desc;
+		
+		const contentBox = document.getElementById('modalPreviewContent');
+		
+		if (contentType === 'recipe-preview') {
+			contentBox.innerHTML = `
+				<div style="width: 100%; text-align: left;">
+					<div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">SAMPLE DASHBOARD SEARCH</div>
+					<div style="background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; display: flex; gap: 8px; align-items: center; font-size: 13px;">
+						🔍 <span style="color: #334155;">Spicy Chicken Curry</span> 
+						<span style="margin-left: auto; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Breakfast</span>
+					</div>
+					<div style="display: flex; gap: 8px; margin-top: 8px;">
+						<span style="background: #dbeafe; color: #1e40af; font-size: 10px; padding: 2px 8px; border-radius: 4px;">500 kcal</span>
+						<span style="background: #fef3c7; color: #92400e; font-size: 10px; padding: 2px 8px; border-radius: 4px;">Normal BMI</span>
+					</div>
+				</div>`;
+		} else if (contentType === 'bmi-preview') {
+			contentBox.innerHTML = `
+				<div style="width: 100%; text-align: center;">
+					<div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">BMI RESULT & CALORIE GUIDE</div>
+					<div style="font-size: 28px; font-weight: 800; color: #16a34a;">22.4 <span style="font-size: 14px; color: #64748b;">(Normal)</span></div>
+					<div style="width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; display: flex;">
+						<div style="width: 25%; background: #3b82f6;"></div>
+						<div style="width: 35%; background: #22c55e;"></div>
+						<div style="width: 20%; background: #f97316;"></div>
+						<div style="width: 20%; background: #ef4444;"></div>
+					</div>
+					<div style="font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 12px;">🔥 Target Meal Range: 400 - 700 kcal</div>
+					<div>
+						<a href="[[@{/user/bmi/bmiForm}]]" class="btn-global btn-primary" style="display: inline-block; padding: 8px 20px; text-decoration: none; border-radius: 8px; font-size: 13px;">Calculate BMI</a>
+					</div>
+				</div>`;
+		} else if (contentType === 'mealplan-preview') {
+			contentBox.innerHTML = `
+				<div style="width: 100%; text-align: left; font-size: 12px;">
+					<div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">GENERATED 7-DAY SCHEDULE</div>
+					<div style="background: white; padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; border: 1px solid #e2e8f0;">🍳 <strong>Breakfast:</strong> Oatmeal & Berries (380 kcal)</div>
+					<div style="background: white; padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; border: 1px solid #e2e8f0;">🥗 <strong>Lunch:</strong> Grilled Salmon Salad (520 kcal)</div>
+					<div style="background: white; padding: 6px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">🍲 <strong>Dinner:</strong> Veggie Soup & Toast (410 kcal)</div>
+				</div>`;
+		} else if (contentType === 'favorite-preview') {
+			contentBox.innerHTML = `
+				<div style="width: 100%; text-align: center;">
+					<div style="font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px;">MY FAVORITES Meals</div>
+					<div style="background: white; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+						<div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+							<span>❤️</span> <strong>Avocado & Toast</strong>
+						</div>
+						<span style="color: #16a34a; font-weight: 700; font-size: 12px;">Saved</span>
+					</div>
+				</div>`;
+		}
+
+		const modal = document.getElementById('featurePreviewModal');
+		modal.style.display = 'flex';
+	}
+
+	function closeFeaturePreview() {
+		document.getElementById('featurePreviewModal').style.display = 'none';
+	}
+
+	// Close modal when clicking on the background backdrop
+	window.addEventListener('click', (e) => {
+		const modal = document.getElementById('featurePreviewModal');
+		if (e.target === modal) {
+			closeFeaturePreview();
+		}
+	});
+	</script>
+ 
+</body>
+</html>

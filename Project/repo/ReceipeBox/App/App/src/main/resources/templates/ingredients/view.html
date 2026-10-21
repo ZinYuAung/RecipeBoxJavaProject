@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Ingredient Details — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-ingredients')}"></div>
+
+	<main class="container">
+
+		<div class="detail-card">
+
+			<!-- Title Frame Inside Details Container -->
+			<div class="form-title-area">
+				<h2>Ingredient Profile</h2>
+				<p>Review item properties</p>
+			</div>
+
+			<!-- Ingredient Name Field (Dynamic) -->
+			<div class="detail-row">
+				<div class="detail-label">Ingredient Name</div>
+				<div class="detail-value" th:text="${ingredient.name}">Ingredient Name</div>
+			</div>
+			
+			<!--  Total Allergen Metric Count Field (Dynamic Count ) -->
+			<div class="detail-row">
+				<div class="detail-label">Total Count</div>
+				<div class="detail-value">
+					<span class="count-indicator"
+						th:text="${#lists.size(ingredient.ingredientAllergies) + ' Items'}">0
+						Items</span>
+				</div>
+			</div>
+
+			<!--  Associated Allergens Field (Full Width Layout) -->
+			<div style="margin-bottom: 20px;">
+				<label class="form-label" style="display: block; margin-bottom: 8px;">Associated Allergens</label>
+				
+				<span th:if="${#lists.isEmpty(ingredient.ingredientAllergies)}"
+					style="color: #64748b; font-size: 14px;">No allergy
+					associated</span> 
+				
+				<!-- ingredient.ingredientAllergies more than 5max-heightand overflow-y -->
+				<div th:if="${!#lists.isEmpty(ingredient.ingredientAllergies)}"
+					th:style="${#lists.size(ingredient.ingredientAllergies) > 5} ? 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; max-height: 120px; overflow-y: auto; background-color: #f8fafc; width: 100%;' : 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background-color: #f8fafc; width: 100%;'">
+					
+					<div th:style="${#lists.size(ingredient.ingredientAllergies) <= 5} ? 'display: flex; gap: 12px; flex-wrap: wrap; align-items: center;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;'">
+						<span th:each="ia : ${ingredient.ingredientAllergies}"
+							th:text="${ia.allergy.name}" class="allergen-badge" style="display: inline-block;">Allergy</span>
+					</div>
+				</div>
+			</div>
+			
+
+			<!-- Action Footer Links  -->
+			<div class="form-action-row">
+				<a th:href="@{/admin/ingredient/list}"
+					class="btn-global btn-secondary"> <i class="bi bi-arrow-left"></i>Back
+					to List
+				</a> <a
+					th:href="@{/admin/ingredient/edit/{id}(id=${ingredient.ingredientId})}"
+					class="btn-global btn-primary"> <i class="bi bi-pencil-square"></i>Edit
+					Ingredient
+				</a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

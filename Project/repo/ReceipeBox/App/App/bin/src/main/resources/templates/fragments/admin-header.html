@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+	<header th:fragment="global-header(page)" class="global-header">
+
+		<a th:href="@{/home}" class="global-logo"> <span class="logo-icon">🍳</span>
+			<span class="logo-text">Recipe<span>Box</span></span>
+		</a>
+
+		<div class="search-container"
+			th:classappend="${session.loginUser == null} ? 'hidden'">
+			<span class="search-icon">🔍</span> <input type="text"
+				class="search-input" placeholder="Search resources...">
+		</div>
+
+		<nav class="header-nav-right">
+
+			<div class="nav-group admin-nav-group">
+				<a th:href="@{/admin/recipe/list}" class="nav-link"
+					th:classappend="${page == 'admin-recipes'} ? 'active'">Recipes</a>
+				<a th:href="@{/admin/ingredient/list}" class="nav-link"
+					th:classappend="${page == 'admin-ingredients'} ? 'active'">Ingredients</a>
+				<a th:href="@{/allergy/list}" class="nav-link"
+					th:classappend="${page == 'admin-allergies'} ? 'active'">Allergies</a>
+				<a th:href="@{/user/list}" class="nav-link"
+					th:classappend="${page == 'admin-users'} ? 'active'">Users</a>
+			</div>
+
+		</nav>
+
+		<!-- AUTHENTICATED LOGOUT -->
+		<div th:if="${session.loginUser != null}"
+			class="user-profile-controls">
+			<span class="welcome-user"> Hi, 
+				<!-- <strong th:text="${session.loginUser.name}">Admin</strong>! -->
+			</span>
+			<form th:action="@{/logout}" method="POST" style="display: inline;">
+				<button type="submit" class="logout-btn">Log Out</button>
+			</form>
+		</div>
+	</header>
+
+</body>
+</html>

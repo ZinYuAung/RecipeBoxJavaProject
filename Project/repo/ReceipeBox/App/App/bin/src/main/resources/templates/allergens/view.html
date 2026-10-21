@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Allergen Details — Admin</title>
+  <link rel="stylesheet" th:href="@{/css/global-style.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/deatil_form.css}">
+</head>
+<body>
+
+  <div th:replace="~{fragments/header :: global-header('admin-allergens')}"></div>
+
+  <main class="container">
+    
+    <div class="detail-card">
+      
+      <!-- Title Frame -->
+      <div style="margin-bottom: 28px; border-bottom: 1px solid var(--border-color, #e2e8f0); padding-bottom: 16px;">
+        <h2 style="font-size: 26px; font-weight: 800; color: #0f172a; margin: 0;">Allergen Profile</h2>
+        <p style="color: #64748b; font-size: 14px; margin: 4px 0 0 0;">Review allergen properties</p>
+      </div>
+
+      <!-- Allergen Name Field -->
+      <div class="detail-row">
+        <div class="detail-label">Allergen Name</div>
+        <div class="detail-value" th:text="${allergen.name}" style="font-size: 18px; font-weight: 700; color: #0f172a;"></div>
+      </div>
+
+      <!-- Allergen ID Field (Added for Reference) -->
+      <div class="detail-row">
+        <div class="detail-label">Allergen ID</div>
+        <div class="detail-value" th:text="${allergen.allergenId}"></div>
+      </div>
+
+      <!-- Action Footer Links -->
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; border-top: 1px solid var(--border-color,#e2e8f0); padding-top: 24px;">
+        <a th:href="@{/admin/allergy}" class="btn-global btn-secondary" style="text-decoration: none;">Back to List</a>
+        <a th:href="@{/admin/allergy/edit/{id}(id=${allergen.allergenId})}" class="btn-global btn-primary" style="text-decoration: none;">Edit Settings</a>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

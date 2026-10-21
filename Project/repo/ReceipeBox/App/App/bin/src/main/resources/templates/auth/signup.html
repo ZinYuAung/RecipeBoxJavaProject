@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - FlavorFold</title>
+
+<!-- Global CSS Link -->
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<!-- Global Header Component -->
+	<div th:replace="~{fragments/header :: global-header('signup')}"></div>
+
+	<!-- Page wrapper containing the centered split-card -->
+	<main class="auth-page-container">
+
+		<div class="split-auth-card">
+
+			<div class="auth-banner-side"
+				th:style="'background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.45)), url(' + @{/uploads/signup-bg.jpg} + ');'">
+				<div class="banner-overlay-content">
+					<h2>Join Our Kitchen Hub Today.</h2>
+					<p>Create an account to discover recipes, keep track of your
+						grocery lists, and build your digital recipe box.</p>
+				</div>
+			</div>
+
+
+			<div class="auth-form-side">
+				<div class="form-wrapper">
+					<h2>Create Your Account</h2>
+					<p class="form-subtitle">Join us to start managing and sharing
+						your recipes.</p>
+
+					<!-- 💡 RegisterController ဘက်မှ Email တူနေ၍ Error ပို့လာပါက စနစ်တကျ ပြသပေးမည့် နေရာ -->
+					<div th:if="${error}"
+						style="color: #ef4444; background-color: #fef2f2; border: 1px solid #fee2e2; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 500;">
+						<span th:text="${error}">Email is already registered.</span>
+					</div>
+
+					<form th:action="@{/signup}" method="POST">
+						<!-- First Name & Last Name Side-by-Side Row (Fixed: Combined inline styles to prevent Thymeleaf parsing error) -->
+						<div style="display: flex; gap: 16px; margin-bottom: 22px;">
+							<div style="flex: 1; margin-bottom: 0;" class="form-group">
+								<label for="firstName">First Name</label> <input type="text"
+									id="firstName" name="firstName" class="form-control" required
+									placeholder="John">
+							</div>
+							<div style="flex: 1; margin-bottom: 0;" class="form-group">
+								<label for="lastName">Last Name</label> <input type="text"
+									id="lastName" name="lastName" class="form-control" required
+									placeholder="Doe">
+							</div>
+						</div>
+
+						<!-- Email Input -->
+						<div class="form-group">
+							<label for="email">Email Address</label> <input type="email"
+								id="email" name="email" class="form-control" required
+								placeholder="you@example.com">
+						</div>
+
+						<!-- Password Input -->
+						<div class="form-group">
+							<label for="password">Password</label>
+							<div class="password-input-wrapper">
+								<input type="password" id="password" name="password"
+									class="form-control" required placeholder="Create password">
+								<span class="password-toggle-icon">👁️</span>
+							</div>
+						</div>
+
+						<!-- Orange Action Button -->
+						<button type="submit" class="auth-submit-btn"
+							style="margin-top: 10px;">Get Started →</button>
+					</form>
+
+					<!-- Footer Link -->
+					<div class="auth-footer">
+						Already have an account? <a th:href="@{/login}">Log in instead</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+</body>
+</html>

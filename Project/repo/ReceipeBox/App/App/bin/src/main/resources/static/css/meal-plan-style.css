@@ -1,0 +1,113 @@
+/* ==========================================================================
+   7. 7-DAY MEAL TIMELINE & PLANNER LAYOUTS
+   ========================================================================== */
+
+.meal-timeline-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.timeline-day-card {
+  display: flex;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+}
+
+.timeline-day-card .day-indicator {
+  background: var(--dark-slate);
+  color: #ffffff;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.timeline-day-card .day-indicator h3 {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-meals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  width: 100%;
+  background: #ffffff;
+}
+
+.meal-slot-item {
+  position: relative;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+  padding-top: 28px;
+}
+
+.meal-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--primary-color);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.meal-mini-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.meal-mini-card img {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mini-card-details h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-slate);
+  margin-bottom: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mini-card-details .cooking-duration {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+}
+
+/* Responsive updates for mobile layouts */
+@media (max-width: 912px) {
+  .timeline-day-card {
+    flex-direction: column;
+  }
+  .timeline-day-card .day-indicator {
+    width: 100%;
+    padding: 10px;
+  }
+  .day-meals-grid {
+    grid-template-columns: 1fr;
+  }
+}

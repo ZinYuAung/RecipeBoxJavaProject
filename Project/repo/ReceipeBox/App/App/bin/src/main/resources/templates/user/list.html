@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Manage Users — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/alert.css}"> <!-- သူငယ်ချင်းဆီမှ alert.css (Modal အတွက် လိုအပ်သည်) -->
+</head>
+<body>
+
+	<!-- သင့်ရဲ့ Header Fragment 'users' သို့ ပြောင်းထားသည် -->
+	<div th:replace="~{fragments/header :: global-header('users')}"></div>
+
+	<main class="container">
+
+		<div class="crud-header">
+			<div class="crud-title">
+				<h2>Users</h2>
+				<p>Managing system user accounts</p>
+			</div>
+			<!-- သင့်ရဲ့ Create User Route: /admin/register -->
+			<a th:href="@{/admin/register}" class="btn-global btn-primary">+
+				Create User</a>
+		</div>
+
+		<div class="card-table-wrapper">
+			<table class="global-table">
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Role</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="user, stat : ${users}">
+						<td th:text="${stat.count}">1</td>
+						<td th:text="${user.name}">John Doe</td>
+						<td th:text="${user.email}">john@example.com</td>
+						<td th:text="${user.role}">Admin</td>
+						<td>
+						
+							<span
+								th:classappend="${user.is_active} ? 'badge badge-success' : 'badge badge-secondary'"
+								th:text="${user.is_active} ? 'Active' : 'Inactive'">Active</span>
+						</td>
+						<td>
+							<div class="btn-action-group">
+							
+								<a th:href="@{/admin/info/{id}(id=${user.userId})}"
+									class="btn-global btn-secondary">👁️</a> 
+								
+								<a th:href="@{/admin/edit/{id}(id=${user.userId})}"
+									class="btn-global btn-secondary">✏️</a>
+							
+								<button type="button" class="btn-global btn-secondary"
+									th:if="${user.is_active and user.userId != session.loginUser.userId}"
+									th:onclick="openDeleteCard([[${user.userId}]], [[${user.name}]])"
+									style="background-color: #ef4444; color: white;">🗑️</button>
+							</div>
+						</td>
+					</tr>
+			
+					<tr th:if="${#lists.isEmpty(users)}">
+						<td colspan="6"
+							style="text-align: center; color: #64748b; padding: 40px;">No
+							users found.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+
+	
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800;">Confirm Deletion</h3>
+			<p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b;">
+				Are you sure you want to delete user <strong id="modalTargetName" style="color: var(--primary-color);"></strong>?
+			</p>
+			
+			<div style="display: flex; justify-content: flex-end; border-top: none;">
+				<button type="button" class="btn-global btn-secondary" onclick="closeDeleteCard()">Cancel</button>
+			
+				<a id="modalDeleteLink" href="#" class="btn-global btn-danger" 
+				   style="margin-left: 12px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+				   Delete
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" th:inline="javascript">
+		const modal = document.getElementById('deleteModal');
+		const modalNameSpan = document.getElementById('modalTargetName');
+		const modalDeleteLink = document.getElementById('modalDeleteLink');
+
+		function openDeleteCard(id, name) {
+			modalNameSpan.textContent = "'" + name + "'";
+	
+			modalDeleteLink.href = "/admin/delete/" + id;
+			
+			modal.classList.add('active');
+		}
+
+		function closeDeleteCard() {
+			modal.classList.remove('active');
+		}
+
+		window.onclick = function(event) {
+			if (event.target === modal) {
+				closeDeleteCard();
+			}
+		}
+	</script>
+</body>
+</html>

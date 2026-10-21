@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <div th:fragment="auth-scripts">
+    <script>
+      function togglePasswordVisibility(button) {
+        const container = button.closest('.input-container');
+        const targetInput = container.querySelector('.password-field');
+        
+        if (targetInput.type === 'password') {
+          targetInput.type = 'text';
+          button.innerText = '🙈';
+        } else {
+          targetInput.type = 'password';
+          button.innerText = '👁';
+        }
+      }
+    </script>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>View Recipe</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-recipes')}"></div>
+
+	<main class="container">
+		<div class="form-card">
+			<h2 th:text="${recipe.name}">Recipe Name</h2>
+			<hr>
+
+			<p>
+				<strong>Meal Type:</strong> <span th:text="${recipe.mealType}"></span>
+			</p>
+			<p>
+				<strong>Target BMI Category:</strong> <span
+					th:text="${recipe.bmiCategory != null ? recipe.bmiCategory : 'N/A'}"
+					th:class="${'badge badge-' + (recipe.bmiCategory != null ? recipe.bmiCategory.toString().toLowerCase() : 'secondary')}">
+				</span>
+			</p>
+			<p>
+				<strong>Cooking Time:</strong> <span
+					th:text="${recipe.cookingTimeMin}"></span> minutes
+			</p>
+
+			<div
+				th:if="${recipe.imageUrl != null and !#strings.isEmpty(recipe.imageUrl)}">
+				<img th:src="${recipe.imageUrl}" alt="Recipe Image"
+					style="max-width: 100%; border-radius: 8px;">
+			</div>
+
+			<p>
+				<strong>Description:</strong>
+			</p>
+			<p th:text="${recipe.description}"></p>
+
+			<div class="form-action-row" style="margin-top: 20px;">
+				<a th:href="@{/admin/recipe/list}" class="btn-global btn-secondary">Back
+					to List</a> <a
+					th:href="@{/admin/recipe/edit/{id}(id=${recipe.recipeId})}"
+					class="btn-global btn-primary">Edit Recipe</a>
+			</div>
+		</div>
+	</main>
+
+</body>
+</html>

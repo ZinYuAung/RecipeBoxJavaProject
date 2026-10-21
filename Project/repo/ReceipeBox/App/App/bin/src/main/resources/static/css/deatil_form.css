@@ -1,0 +1,50 @@
+@charset "UTF-8";
+    .detail-card { 
+      background: #ffffff; 
+      border-radius: 16px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+      border: 1px solid var(--border-color,#e2e8f0); 
+      padding: 32px; 
+      max-width: 650px; 
+      margin: 0 auto; 
+    }
+    .detail-row { 
+      display: flex; 
+      align-items: center; 
+      padding: 18px 0; 
+      border-bottom: 1px solid var(--border-color,#f1f5f9); 
+    }
+    .detail-label { 
+      width: 40%; /* Fixed width for labels ensures perfect vertical alignment */
+      font-weight: 700; 
+      color: #475569; 
+      text-transform: uppercase; 
+      font-size: 13px; 
+      letter-spacing: 0.5px; 
+    }
+    .detail-value { 
+      width: 60%; /* Takes up the remaining space, left-aligned */
+      color: #1e293b; 
+      font-size: 15px; 
+      font-weight: 500; 
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .allergen-badge {
+      background-color: #f1f5f9;
+      color: #334155;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .count-indicator {
+      background-color: #f97316; /* Matches the vibrant orange layout accent color */
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Edit Recipe — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-recipes')}"></div>
+
+	<main class="container" style="margin: 24px auto;">
+		<form th:action="@{/admin/recipe/update}" th:object="${recipe}"
+			method="POST" enctype="multipart/form-data" >
+			<!-- Compact Workspace Card -->
+			<div class="compact-workspace-card">
+
+				<!-- LEFT COLUMN (Image Preview) -->
+				<div class="workspace-preview-left">
+				<input type="hidden" th:field="*{imageUrl}">
+					<label id="imagePlaceholder"
+						class="preview-placeholder-center clickable-upload-area"
+						th:style="${recipe.imageUrl != null and !#strings.isEmpty(recipe.imageUrl)} ? 'display: none;' : 'display: flex;'">
+						<span class="placeholder-icon">📷</span>
+						<p class="placeholder-text">Click anywhere here to upload an
+							image</p> <input type="file" name="imageFile"
+						class="hidden-file-input" accept="image/*"
+						onchange="if(this.files && this.files[0]){
+                         let reader = new FileReader();
+                         reader.onload = (e) => {
+                         
+                             document.getElementById('imageDisplay').src = e.target.result;
+                             document.getElementById('imageDisplay').style.display = 'block';
+                             document.getElementById('imagePlaceholder').style.display = 'none';
+                         };
+                         reader.readAsDataURL(this.files[0]);
+                     }">
+					</label> <img id="imageDisplay"
+						th:src="@{'/uploads/' + ${recipe.imageUrl}}"
+						class="preview-loaded-image"
+						th:style="${recipe.imageUrl != null and !#strings.isEmpty(recipe.imageUrl)} ? 'display: block;' : 'display: none;'"
+						alt="Recipe Cover image"
+						title="Click to change image"
+						onclick="document.querySelector('.hidden-file-input').click();">
+						
+				</div>
+
+				<!-- RIGHT COLUMN (Form Fields) -->
+				<div class="workspace-form-right">
+					<div class="form-title-area"
+						style="margin-bottom: 14px; padding-bottom: 8px;">
+						<h2>Edit Recipe</h2>
+						<p>
+							Updating: <strong th:text="${recipe.name}">Recipe Name</strong>
+						</p>
+					</div>
+
+
+
+					<input type="hidden" th:name="${_csrf.parameterName}"
+						th:value="${_csrf.token}" /> <input type="hidden"
+						th:field="*{recipeId}">
+
+
+
+					<!-- Recipe Name -->
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label" style="margin-bottom: 4px;">Recipe
+							Name</label> <input type="text" th:field="*{name}" class="form-control"
+							placeholder="e.g. Traditional Spicy Curry">
+						<!-- Span for Error Message -->
+						<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+							style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+					</div>
+
+					<!-- Multi-column Row: Cooking Time, Meal Type & BMI Category -->
+					<div class="form-row-2col" style="margin-bottom: 0;">
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label" style="margin-bottom: 4px; margin-top: 4px;">Cooking
+								Time (mins)</label> <input type="number" th:field="*{cookingTimeMin}"
+								min="1" class="form-control" placeholder="e.g. 45"> <span
+								th:if="${#fields.hasErrors('cookingTimeMin')}"
+								th:errors="*{cookingTimeMin}"
+								style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+						</div>
+						<!-- Calories Field -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label" style="margin-bottom: 4px; margin-top: 4px;">Calories
+								(kcal)</label> <input type="number" th:field="*{calories}" min="0"
+								step="1" class="form-control" placeholder="e.g. 450"
+								onkeydown="if(event.key === '-' || event.key === 'e' || event.key === '+') event.preventDefault();">
+							<span th:if="${#fields.hasErrors('calories')}"
+								th:errors="*{calories}"
+								style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+						</div>
+
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label" style="margin-bottom: 4px; margin-top: 4px;">Meal
+								Type</label> <select th:field="*{mealType}" class="form-control">
+								<option value="" disabled selected>Select meal type</option>
+								<option value="BREAKFAST">Breakfast</option>
+								<option value="LUNCH">Lunch</option>
+								<option value="DINNER">Dinner</option>
+								<option value="SNACK">Snack</option>
+							</select> <span th:if="${#fields.hasErrors('mealType')}"
+								th:errors="*{mealType}"
+								style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+						</div>
+
+						<!-- BMI Category -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label" style="margin-bottom: 4px; margin-top: 4px;">Target
+								BMI Category</label> <select th:field="*{bmiCategory}"
+								class="form-control">
+								<option value="" disabled selected>Select BMI category</option>
+								<option value="UNDERWEIGHT">Underweight</option>
+								<option value="NORMAL">Normal</option>
+								<option value="OVERWEIGHT">Overweight</option>
+								<option value="OBESE">Obese</option>
+							</select> <span th:if="${#fields.hasErrors('bmiCategory')}"
+								th:errors="*{bmiCategory}"
+								style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+						</div>
+					</div>
+
+					<!-- Ingredients Selection Table Area -->
+					<div class="form-group" style="margin-top: 4px; margin-bottom: 0;">
+						<label class="form-label" style="margin-bottom: 4px; margin-top: 4px;">Select
+							Ingredients, Quantity & Unit</label>
+
+						<div
+							style="max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff;">
+							<table
+								style="width: 100%; border-collapse: collapse; font-size: 14px;">
+								<thead>
+									<tr
+										style="background: #f8fafc; border-bottom: 1px solid #cbd5e1; text-align: left; position: sticky; top: 0; z-index: 1;">
+										<th style="padding: 6px 10px; width: 50px;">No</th>
+										<th style="padding: 6px 10px;">Ingredients</th>
+										<th style="padding: 6px 10px; width: 90px;">Amount</th>
+										<th style="padding: 6px 10px; width: 110px;">Unit</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="ing, iterStat : ${allIngredients}"
+										style="border-bottom: 1px solid #f1f5f9;">
+										<td
+											style="padding: 6px 10px; text-align: center; color: #64748b;"
+											th:text="${iterStat.count}">1</td>
+
+										<!-- Checkbox -->
+										<td style="padding: 6px 10px;"><label
+											style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+												<input type="checkbox" name="ingredientIds"
+												th:value="${ing.ingredientId}"
+												th:checked="${selectedIngredientIds != null and selectedIngredientIds.contains(ing.ingredientId)}"
+												th:onchange="'toggleIngredientInputs(this, ' + ${iterStat.index} + ')'" />
+												<span th:text="${ing.name}">Ingredient</span>
+										</label></td>
+
+
+										<!-- Qty Input -->
+										<td style="padding: 6px 10px;"><input type="number"
+											step="0.01" min="0.01" th:id="${'qty_' + iterStat.index}"
+											name="quantities" class="form-control"
+											th:value="${quantities != null and iterStat.index < quantities.size() and quantities[iterStat.index] != null ? quantities[iterStat.index] : (ingredientQtys != null and ingredientQtys.containsKey(ing.ingredientId) ? ingredientQtys.get(ing.ingredientId) : '1.0')}"
+											placeholder="Qty"
+											th:disabled="${selectedIngredientIds == null or !selectedIngredientIds.contains(ing.ingredientId)}"
+											th:style="${selectedIngredientIds != null and selectedIngredientIds.contains(ing.ingredientId)} ? 'padding: 2px 6px; height: 30px; display: block;' : 'padding: 2px 6px; height: 30px; display: none;'" />
+										</td>
+
+										<!-- Unit Select -->
+										<td style="padding: 6px 10px;"><select
+											th:id="${'unit_' + iterStat.index}" name="units"
+											class="form-control"
+											th:disabled="${selectedIngredientIds == null or !selectedIngredientIds.contains(ing.ingredientId)}"
+											th:style="${selectedIngredientIds != null and selectedIngredientIds.contains(ing.ingredientId)} ? 'padding: 2px 6px; height: 30px; display: block;' : 'padding: 2px 6px; height: 30px; display: none;'">
+												<option value="GRAM"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'GRAM') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'GRAM')}">gram</option>
+												<option value="KG"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'KG') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'KG')}">kg</option>
+												<option value="ML"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'ML') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'ML')}">ml</option>
+												<option value="TSP"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'TSP') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'TSP')}">tsp</option>
+												<option value="TBSP"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'TBSP') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'TBSP')}">tbsp</option>
+												<option value="PCS"
+													th:selected="${(units != null and iterStat.index < units.size() and units[iterStat.index] == 'PCS') or (units == null and ingredientUnits != null and ingredientUnits.get(ing.ingredientId) == 'PCS')}">pcs</option>
+										</select></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<!-- Span for Ingredients Error Message -->
+						<span th:if="${ingredientError != null}"
+							th:text="${ingredientError}"
+							style="color: #ef4444; font-size: 12px; display: block; margin-top: 4px;"></span>
+					</div>
+
+					<!-- Description Area -->
+					<div class="form-group" style="margin-top: 4px; margin-bottom: 0;">
+						<label class="form-label" style="margin-bottom: 4px;">Description</label>
+						<textarea th:field="*{description}" class="form-control" rows="2"
+							placeholder="Describe the recipe steps or ingredients..."></textarea>
+						<span th:if="${#fields.hasErrors('description')}"
+							th:errors="*{description}"
+							style="color: #ef4444; font-size: 12px; display: block; margin-top: 2px;"></span>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="form-action-row">
+						<a th:href="@{/admin/recipe/list}"
+							class="btn-global btn-secondary"><i class="bi bi-x-circle"></i>Cancel</a>
+						<button type="submit" class="btn-global btn-primary">
+							<i class="bi bi-check-circle-fill"></i>Update Recipe
+						</button>
+					</div>
+
+				</div>
+
+			</div>
+		</form>
+	</main>
+
+	<script>
+	function toggleIngredientInputs(checkbox, index) {
+	    let qtyInput = document.getElementById('qty_' + index);
+	    let unitSelect = document.getElementById('unit_' + index);
+
+	    if (checkbox.checked) {
+	        qtyInput.style.display = 'block';
+	        unitSelect.style.display = 'block';
+	        qtyInput.removeAttribute('disabled');
+	        unitSelect.removeAttribute('disabled');
+	    } else {
+	        qtyInput.style.display = 'none';
+	        unitSelect.style.display = 'none';
+	        qtyInput.value = '1.0';
+	        qtyInput.setAttribute('disabled', 'true');
+	        unitSelect.setAttribute('disabled', 'true');
+	    }
+	}
+
+	window.addEventListener('DOMContentLoaded', (event) => {
+	    document.querySelectorAll('input[name="ingredientIds"]').forEach((checkbox, index) => {
+	        let qtyInput = document.getElementById('qty_' + index);
+	        let unitSelect = document.getElementById('unit_' + index);
+	        
+	        if (checkbox.checked) {
+	            toggleIngredientInputs(checkbox, index);
+	        } else {
+	            if(qtyInput) qtyInput.setAttribute('disabled', 'true');
+	            if(unitSelect) unitSelect.setAttribute('disabled', 'true');
+	        }
+	    });
+	});
+	</script>
+</body>
+</html>

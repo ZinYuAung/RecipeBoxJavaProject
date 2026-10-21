@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Recipes — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-recipes')}"></div>
+
+	<main class="list-container">
+		<div th:if="${message}" id="alertMessage" class="alert-msg">
+			<i class="bi bi-check-circle-fill"></i> <span th:text="${message}">Recipe!</span>
+		</div>
+		
+		<div th:if="${errorMessage}" id="errorAlert"
+			class="alert-msg-danger">
+			<i class="bi bi-exclamation-triangle"></i> <span
+				th:text="${errorMessage}">Error message</span>
+		</div>
+
+		<div class="crud-header">
+			<div class="crud-title">
+				<h2>Recipes Management</h2>
+				<p>Manage the list of recipes to ensure user safety</p>
+			</div>
+
+			<!-- Unified GET Filter Form -->
+			<form th:action="@{/admin/recipe/list}" method="GET"
+				style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 0;">
+
+				<div class="global-search-box">
+					<!-- Orange Search Icon -->
+					<i class="bi bi-search"></i>
+
+					<!-- Search Input Field -->
+					<input type="text" id="searchInput" name="keyword"
+						th:value="${keyword}"
+						class="form-control"
+						placeholder="Search recipes..." aria-label="Search"
+						oninput="toggleClearButton(this)">
+
+					<!-- Clear Button Icon -->
+					<button type="button" id="clearBtn" class="global-search-clear-btn" onclick="clearSearch(this)"
+						th:style="${keyword != null and !#strings.isEmpty(keyword)} ? 'display: block;' : 'display: none;'"
+						title="Clear search">
+						<i class="bi bi-x-circle-fill"></i>
+					</button>
+				</div>
+
+				<!-- Meal Type Dropdown -->
+				<select name="mealType" class="btn-global"
+					style="height: auto; border: 1.5px solid var(--primary-color); background-color: #ffffff; color: var(--primary-color); cursor: pointer; font-weight: 600; border-radius: 8px; padding: 8px 16px;"
+					onchange="this.form.submit()">
+					<option value="" style="background-color: #ffffff; color: #333333; border-radius: 8px;">All
+						Meal Types</option>
+					<option value="BREAKFAST"
+						th:selected="${selectedMealType == 'BREAKFAST'}"
+						style="background-color: #ffffff; color: #333333; border-radius: 8px;">Breakfast</option>
+					<option value="LUNCH" th:selected="${selectedMealType == 'LUNCH'}"
+						style="background-color: #ffffff; color: #333333;">Lunch</option>
+					<option value="DINNER"
+						th:selected="${selectedMealType == 'DINNER'}"
+						style="background-color: #ffffff; color: #333333;">Dinner</option>
+					<option value="SNACK" th:selected="${selectedMealType == 'SNACK'}"
+						style="background-color: #ffffff; color: #333333;">Snack</option>
+				</select>
+
+				<!-- BMI Category Dropdown -->
+				<select name="bmiCategory" class="btn-global"
+					style="height: auto; border: 1.5px solid var(--primary-color); background-color: #ffffff; color: var(--primary-color); cursor: pointer; font-weight: 600; border-radius: 8px; padding: 8px 16px;"
+					onchange="this.form.submit()">
+					<option value="" style="background-color: #ffffff; color: #333333;">All
+						BMI Categories</option>
+					<option value="UNDERWEIGHT"
+						th:selected="${selectedBmiCategory == 'UNDERWEIGHT'}"
+						style="background-color: #ffffff; color: #333333;">Underweight</option>
+					<option value="NORMAL"
+						th:selected="${selectedBmiCategory == 'NORMAL'}"
+						style="background-color: #ffffff; color: #333333;">Normal</option>
+					<option value="OVERWEIGHT"
+						th:selected="${selectedBmiCategory == 'OVERWEIGHT'}"
+						style="background-color: #ffffff; color: #333333;">Overweight</option>
+					<option value="OBESE"
+						th:selected="${selectedBmiCategory == 'OBESE'}"
+						style="background-color: #ffffff; color: #333333;">Obese</option>
+				</select>
+
+				<!-- Status Dropdown (Active/Inactive) -->
+				<select name="status" class="btn-global"
+					style="height: auto; border: 1.5px solid var(--primary-color); background-color: #ffffff; color: var(--primary-color); cursor: pointer; font-weight: 600; border-radius: 8px; padding: 8px 16px;"
+					onchange="this.form.submit()">
+					<option value="" style="background-color: #ffffff; color: #333333;">All
+						Statuses</option>
+					<option value="true" th:selected="${selectedStatus == true}"
+						style="background-color: #ffffff; color: #333333;">Active</option>
+					<option value="false" th:selected="${selectedStatus == false}"
+						style="background-color: #ffffff; color: #333333;">Inactive</option>
+				</select>
+
+			</form>
+			<a th:href="@{/admin/recipe/create}" class="btn-global btn-primary">➕
+				Add New Recipe</a>
+		</div>
+
+		<!-- Card Wrapper with Responsive Scrollable Table Container -->
+		<div class="card-table-wrapper">
+			<div class="table-responsive">
+				<table class="global-table">
+					<thead>
+						<tr>
+							<th>No.</th>
+							<th>Recipe Name</th>
+							<th>Meal Type</th>
+							<th>BMI Category</th>
+							<th>Time (Min)</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="recipe, stat : ${recipes}">
+							<td th:text="${stat.count}">1</td>
+							<td th:text="${recipe.name}" style="font-weight: 600;"></td>
+							<td th:text="${recipe.mealType}"></td>
+							<td>
+								<span th:if="${recipe.bmiCategory != null}"
+									th:text="${recipe.bmiCategory}"
+									th:class="${'badge badge-' + recipe.bmiCategory.toString().toLowerCase()}">
+								</span> 
+								<span th:if="${recipe.bmiCategory == null}"
+									class="badge badge-secondary">N/A</span>
+							</td>
+							<td th:text="${recipe.cookingTimeMin} + ' min'"></td>
+							<td>
+								<span th:if="${recipe.isActive}" class="badge badge-success">Active</span> 
+								<span th:if="${!recipe.isActive}" class="badge badge-danger">Inactive</span>
+							</td>
+							<td>
+								<div class="btn-action-group">
+									<a th:href="@{/admin/recipe/view/{id}(id=${recipe.recipeId})}"
+										class="btn-global btn-secondary btn-pill-sm" title="View">
+										<i class="bi bi-eye"></i>View
+									</a> 
+									<a th:href="@{/admin/recipe/edit/{id}(id=${recipe.recipeId})}"
+										class="btn-global btn-primary btn-pill-sm" title="Edit"> 
+										<i class="bi bi-pencil-square"></i> Edit
+									</a>
+
+									<button th:if="${recipe.isActive}" type="button"
+										class="btn-global btn-danger btn-pill-sm"
+										th:onclick="openDeleteCard([[${recipe.recipeId}]], [[${recipe.name}]])"
+										title="Delete">
+										<i class="bi bi-trash3"></i> Delete
+									</button>
+									<form th:if="${!recipe.isActive}"
+										th:action="@{/admin/recipe/activate}" method="POST"
+										class="btn-action-form">
+										<input type="hidden" name="id" th:value="${recipe.recipeId}" />
+										<button type="submit"
+											class="btn-global btn-secondary btn-pill-sm btn-activate-text"
+											title="Activate">
+											<i class="bi bi-check-circle"></i> Activate
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(recipes)}">
+							<td colspan="7"
+								style="text-align: center; color: #64748b; padding: 40px;">No
+								recipes found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Pagination Section -->
+		<div style="display: flex; justify-content: center; margin-top: auto; padding-top: 20px; padding-bottom: 20px;">
+			<nav aria-label="Page navigation"
+				style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 50rem; padding: 6px 16px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 8px;">
+
+				<a th:if="${recipePage.hasPrevious()}"
+					th:href="@{/admin/recipe/list(page=${recipePage.number - 1}, size=${recipePage.size}, keyword=${keyword}, mealType=${selectedMealType}, bmiCategory=${selectedBmiCategory}, status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&lt;</a>
+				<span th:unless="${recipePage.hasPrevious()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&lt;</span>
+
+				<th:block
+					th:with="current=${recipePage.number}, total=${recipePage.totalPages == 0 ? 1 : recipePage.totalPages}">
+					<span th:each="i : ${#numbers.sequence(0, total - 1)}"> 
+						<th:block th:if="${i == 0 || i == total - 1 || (i >= current - 1 && i <= current + 1)}">
+							<a th:if="${i != current}"
+								th:href="@{/admin/recipe/list(page=${i}, size=${recipePage.size}, keyword=${keyword}, mealType=${selectedMealType}, bmiCategory=${selectedBmiCategory}, status=${selectedStatus})}"
+								th:text="${i + 1}"
+								style="color: #4b5563; text-decoration: none; padding: 6px 10px; font-size: 14px; font-weight: 500; border-radius: 50%;">1</a>
+
+							<span th:if="${i == current}" th:text="${i + 1}"
+								style="background-color: #6366f1; color: #ffffff; padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 50rem; display: inline-block; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.4);">1</span>
+						</th:block> 
+						<span th:if="${(i == current - 2 && i > 0) || (i == current + 2 && i < total - 1)}"
+							style="color: #9ca3af; padding: 0 4px; font-size: 14px;">...</span>
+					</span>
+				</th:block>
+
+				<a th:if="${recipePage.hasNext()}"
+					th:href="@{/admin/recipe/list(page=${recipePage.number + 1}, size=${recipePage.size}, keyword=${keyword}, mealType=${selectedMealType}, bmiCategory=${selectedBmiCategory}, status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&gt;</a>
+				<span th:unless="${recipePage.hasNext()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&gt;</span>
+
+			</nav>
+		</div>
+	</main>
+
+	<!-- Delete Modal -->
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800;">Confirm Deletion</h3>
+			<p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b;">
+				Are you sure you want to delete <strong id="modalTargetName"
+					style="color: var(--primary-color);"></strong>?
+			</p>
+			<form th:action="@{/admin/recipe/delete}" method="POST">
+				<input type="hidden" name="id" id="modalTargetId" value="">
+				<div style="display: flex; justify-content: flex-end; border-top: none; gap: 12px;">
+					<button type="button" class="btn-global btn-secondary"
+						onclick="closeDeleteCard()">
+						<i class="bi bi-x-circle"></i>Cancel
+					</button>
+					<button type="submit" class="btn-global btn-danger">
+						<i class="bi bi-trash3"></i>Delete
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript" th:inline="javascript">
+		const modal = document.getElementById('deleteModal');
+		const modalIdInput = document.getElementById('modalTargetId');
+		const modalNameSpan = document.getElementById('modalTargetName');
+
+		function openDeleteCard(id, name) {
+			modalIdInput.value = id;
+			modalNameSpan.textContent = "'" + name + "'";
+			modal.classList.add('active');
+		}
+
+		function closeDeleteCard() {
+			modal.classList.remove('active');
+		}
+
+		window.onclick = function(event) {
+			if (event.target === modal) {
+				closeDeleteCard();
+			}
+		}
+
+		// Clear Search Input Scripts
+		function toggleClearButton(input) {
+			const clearBtn = input.parentNode.querySelector('#clearBtn');
+			if (input.value.trim().length > 0) {
+				clearBtn.style.display = 'block';
+			} else {
+				clearBtn.style.display = 'none';
+			}
+		}
+
+		function clearSearch(button) {
+			const inputGroup = button.parentNode;
+			const input = inputGroup.querySelector('input');
+			input.value = '';
+			button.style.display = 'none';
+			input.form.submit();
+		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			const searchInputs = document.querySelectorAll("input[name='keyword']");
+			searchInputs.forEach(input => {
+				toggleClearButton(input);
+			});
+		});
+
+		setTimeout(() => {
+			const alert = document.getElementById("alertMessage");
+			if (alert) {
+				alert.classList.add("alert-msg-hide");
+				setTimeout(() => {
+					alert.remove();
+				}, 5000);
+			}
+		}, 700);
+		
+		setTimeout(() => {
+			const alert = document.getElementById("errorAlert");
+			if (alert) {
+				alert.classList.add("alert-msg-hide");
+				setTimeout(() => {
+					alert.remove();
+				}, 5000);
+			}
+		}, 700);
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+	<!-- 💡 Dynamic Header: Login ဝင်ထားသည့် Role ပေါ်မူတည်၍ အလိုအလျောက် ရွေးချယ်ပြသမည် -->
+	<header th:fragment="global-header(page)" class="global-header">
+
+		<!-- Logo (အားလုံးအတွက် တူညီသည်) -->
+		<a th:href="@{/home}" class="global-logo"> 
+			<span class="logo-icon">🍳</span>
+			<span class="logo-text">Recipe<span>Box</span></span>
+		</a>
+
+		<!-- ==================== ၁။ ADMIN HEADER (ROLE_ADMIN ဖြစ်လျှင် ပြမည်) ==================== -->
+		<th:block sec:authorize="hasRole('ADMIN')">
+			<div class="search-container">
+				<span class="search-icon">🔍</span> 
+				<input type="text" class="search-input" placeholder="Search resources...">
+			</div>
+
+			<nav class="header-nav-right">
+				<div class="nav-group admin-nav-group">
+					<a th:href="@{/recipe/list}" class="nav-link"
+						th:classappend="${page == 'admin-recipes'} ? 'active'">Recipes</a>
+					<a th:href="@{/ingredient/list}" class="nav-link"
+						th:classappend="${page == 'admin-ingredients'} ? 'active'">Ingredients</a>
+					<a th:href="@{/allergy/list}" class="nav-link"
+						th:classappend="${page == 'admin-allergies'} ? 'active'">Allergies</a>
+					<a th:href="@{/user/list}" class="nav-link"
+						th:classappend="${page == 'admin-users'} ? 'active'">Users</a>
+				</div>
+			</nav>
+		</th:block>
+
+		<!-- ==================== ၂။ USER HEADER (ROLE_USER ဖြစ်လျှင် ပြမည်) ==================== -->
+		<th:block sec:authorize="hasRole('USER')">
+			<div class="search-container">
+				<span class="search-icon">🔍</span> 
+				<input type="text" class="search-input" placeholder="Search resources...">
+			</div>
+
+			<nav class="header-nav-right">
+				<div class="nav-group">
+					<a th:href="@{/user/dashboard}" class="nav-link"
+						th:classappend="${page == 'dashboard'} ? 'active'">Dashboard</a>  
+					<a th:href="@{/user/favorites}" class="nav-link"
+						th:classappend="${page == 'favorites'} ? 'active'">Favorites</a> 
+					<a th:href="@{/user/bmi/bmiForm}" class="nav-link"
+						th:classappend="${page == 'bmi'} ? 'active'">BMI</a> 
+					<a th:href="@{/user/saved-plans}" class="nav-link"
+						th:classappend="${page == 'savedPlans'} ? 'active'">📊 My Diet Journey</a>
+				</div>
+			</nav>
+		</th:block>
+
+		<!-- ==================== ၃။ GUEST HEADER (LOGIN မဝင်ရသေးပါက ပြမည်) ==================== -->
+		<th:block sec:authorize="isAnonymous()">
+			<nav class="header-nav-right" style="margin-left: auto;"> 
+				<div class="auth-buttons"> 
+					<a th:if="${page != 'login'}" th:href="@{/login}" class="login-btn">Log In</a> 
+					<a th:if="${page == 'login'}" th:href="@{/signup}" class="login-btn">Sign Up</a>
+				</div>
+			</nav>
+		</th:block>
+
+		<!-- ==================== LOGOUT CONTROL AREA (LOGIN ဝင်ထားသူတိုင်းအတွက် ပြမည်) ==================== -->
+		<div sec:authorize="isAuthenticated()" class="user-profile-controls">
+			<span class="welcome-user"> Hi, 
+				<strong sec:authentication="name">User</strong>!
+			</span>
+		
+			<form th:action="@{/logout}" method="POST" style="display: inline;">
+				<button type="submit" class="logout-btn">Log Out</button>
+			</form>
+		</div>
+
+	</header>
+
+</body>
+</html>

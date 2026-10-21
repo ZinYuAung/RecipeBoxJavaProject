@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit Allergen — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body> 
+	<main class="container">
+		<div class="form-card">
+			<h2>Edit Allergen</h2>
+			<form th:action="@{/admin/allergy/update}" th:object="${allergen}"
+				method="POST">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<input type="hidden" th:field="*{allergenId}">
+
+				<div class="form-group">
+					<label>Allergen Name</label> <input type="text" th:field="*{name}"
+						class="form-control" required>
+				</div>
+
+				<div class="form-action-row">
+					<a th:href="@{/admin/allergy}" class="btn-global btn-secondary">Cancel</a>
+					<button type="submit" class="btn-global btn-primary">Update
+						Allergen</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+</html>

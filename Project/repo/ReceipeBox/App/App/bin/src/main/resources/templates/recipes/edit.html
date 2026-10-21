@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit Recipe — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-recipes')}"></div>
+
+	<main class="container" style="margin: 24px auto;">
+		<div class="compact-workspace-card">
+
+			<div class="workspace-preview-left">
+
+				<!-- Center Placeholder: Clicking this area opens the file chooser -->
+				<label id="imagePlaceholder"
+					class="preview-placeholder-center clickable-upload-area"> <span
+					class="placeholder-icon">📷</span>
+					<p class="placeholder-text">Click anywhere here to upload an
+						image</p> <!-- Hidden/Stylized file input nested inside the label -->
+					<input type="file" name="imageFile" class="hidden-file-input"
+					accept="image/*"
+					onchange="if(this.files && this.files[0]){
+                             let reader = new FileReader();
+                             reader.onload = (e) => {
+                                 document.getElementById('imageDisplay').src = e.target.result;
+                                 document.getElementById('imageDisplay').style.display = 'block';
+                                 document.getElementById('imagePlaceholder').style.display = 'none';
+                             };
+                             reader.readAsDataURL(this.files[0]);
+                         }">
+				</label>
+
+				<!-- Live Loaded Image Container (Initially Hidden) -->
+				<img id="imageDisplay" src="" class="preview-loaded-image"
+					style="display: none;" alt="Recipe Cover image">
+			</div>
+			<div class="workspace-form-right">
+				<div class="form-title-area"
+					style="margin-bottom: 20px; padding-bottom: 12px;">
+					<h2>Edit Recipe</h2>
+					<p>
+						Updating: <strong th:text="${recipe.name}">Recipe Name</strong>
+					</p>
+				</div>
+
+				<form th:action="@{/admin/recipe/update}" th:object="${recipe}"
+					method="POST" enctype="multipart/form-data"
+					style="display: flex; flex-direction: column; gap: 16px;">
+
+					<input type="hidden" th:field="*{recipeId}">
+
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label">Recipe Name</label> <input type="text"
+							th:field="*{name}" class="form-control" required>
+					</div>
+
+					<div class="form-row-2col">
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Cooking Time (mins)</label> <input
+								type="number" th:field="*{cookingTimeMin}" class="form-control"
+								required>
+						</div>
+
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Meal Type</label> <select
+								th:field="*{mealType}" class="form-control" required>
+								<option value="Breakfast">Breakfast</option>
+								<option value="Lunch">Lunch</option>
+								<option value="Dinner">Dinner</option>
+								<option value="Snack">Snack</option>
+							</select>
+						</div>
+
+						<!-- bmicategory -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Target BMI Category</label> <select
+								th:field="*{bmiCategory}" class="form-control" required>
+								<option value="UNDERWEIGHT">Underweight</option>
+								<option value="NORMAL">Normal</option>
+								<option value="OVERWEIGHT">Overweight</option>
+								<option value="OBESE">Obese</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label">Description</label>
+						<textarea th:field="*{description}" class="form-control" rows="3"></textarea>
+					</div>
+
+					<div class="form-action-row"
+						style="margin-top: 10px; padding-top: 16px;">
+						<a th:href="@{/admin/recipe/list}"
+							class="btn-global btn-secondary">Cancel</a>
+						<button type="submit" class="btn-global btn-primary">Update
+							Recipe</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+
+	<script>
+		function previewImage(input) {
+			if (input.files && input.files[0]) {
+				let reader = new FileReader();
+				reader.onload = (e) => {
+					document.getElementById('imageDisplay').src = e.target.result;
+					document.getElementById('imageDisplay').style.display = 'block';
+					document.getElementById('imagePlaceholder').style.display = 'none';
+				};
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	</script>
+</body>
+</html>

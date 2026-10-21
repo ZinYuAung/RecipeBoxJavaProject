@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Ingredient Details — Admin</title>
+  <link rel="stylesheet" th:href="@{/css/global-style.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+   <link rel="stylesheet" th:href="@{/css/deatil_form.css}">
+
+</head>
+<body>
+
+  <div th:replace="~{fragments/header :: global-header('admin-ingredients')}"></div>
+
+  <main class="container">
+    
+    <div class="detail-card">
+      
+      <!-- Title Frame Inside Details Container -->
+      <div style="margin-bottom: 28px; border-bottom: 1px solid var(--border-color, #e2e8f0); padding-bottom: 16px;">
+        <h2 style="font-size: 26px; font-weight: 800; color: #0f172a; margin: 0;">Ingredient Profile</h2>
+        <p style="color: #64748b; font-size: 14px; margin: 4px 0 0 0;">Review item properties</p>
+      </div>
+
+      <!-- 1. Ingredient Name Field -->
+      <div class="detail-row">
+        <div class="detail-label">Ingredient Name</div>
+        <div class="detail-value" style="font-size: 18px; font-weight: 700; color: #0f172a;">Tomato Sauce</div>
+      </div>
+
+    
+      <div class="detail-row">
+        <div class="detail-label">Associated Allergens</div>
+        <div class="detail-value">
+          <span class="allergen-badge">Gluten</span>
+          <span class="allergen-badge">Soy</span>
+        </div>
+      </div>
+
+      <!-- 3. Total Allergen Metric Count Field -->
+      <div class="detail-row">
+        <div class="detail-label">Total Allergen Count</div>
+        <div class="detail-value">
+          <span class="count-indicator">2 Items</span>
+        </div>
+      </div>
+
+      <!-- Action Footer Links -->
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; border-top: 1px solid var(--border-color,#e2e8f0); padding-top: 24px;">
+        <a th:href="@{/admin/ingredient/list}" class="btn-global btn-secondary" style="text-decoration: none;">Back to List</a>
+        <a th:href="@{/admin/ingredient/edit}" class="btn-global btn-primary" style="text-decoration: none;">Edit Settings</a>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

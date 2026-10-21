@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Edit User — RecipeBox')}">
+</head>
+<head>
+<style>
+.form-row-2col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+.alert-error {
+	color: #ef4444;
+	background-color: #fef2f2;
+	border: 1px solid #fee2e2;
+	padding: 12px;
+	border-radius: 8px;
+	margin-bottom: 16px;
+	font-size: 14px;
+	font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/user-header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Edit Profile</h2>
+				<p>Update account settings.</p>
+			</div>
+			<div th:if="${errorMessage != null}" class="alert-error"
+				th:text="${errorMessage}"></div>
+			<div
+				th:if="${param.error != null and param.error[0] == 'currentPasswordRequired'}"
+				class="alert-error">Please enter your current password to
+				change it.</div>
+			<div
+				th:if="${param.error != null and param.error[0] == 'wrongCurrentPassword'}"
+				class="alert-error">The current password you entered is
+				incorrect. Please try again.</div>
+			<div
+				th:if="${param.error != null and param.error[0] == 'passwordMismatch'}"
+				class="alert-error">New password and confirm password do not
+				match.</div>
+
+			<form th:action="@{/user/profile/update}" th:object="${user}"
+				method="POST">
+
+				<input type="hidden" th:field="*{userId}">
+				<!-- <input type="hidden" th:field="*{imageUrl}" /> -->
+
+				<div class="form-group">
+					<label class="form-label">Name</label> <input type="text"
+						th:field="*{name}" class="form-control" required>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Email Address</label> <input type="email"
+						th:field="*{email}" class="form-control" required>
+				</div>
+
+
+				<div
+					style="border-top: 1px solid #eee; margin-top: 20px; padding-top: 20px;">
+					<h3 style="font-size: 16px; margin-bottom: 10px;">Change
+						Password</h3>
+					<p style="font-size: 13px; color: #666; margin-bottom: 15px;">Leave
+						blank if you do not want to change your password.</p>
+
+					<div class="form-group" style="margin-bottom: 15px;">
+						<label class="form-label">Current Password</label> <input
+							type="password" name="currentPassword" class="form-control"
+							placeholder="••••••••" autocomplete="current-password">
+					</div>
+
+					<div class="form-row-2col">
+						<!-- New Password -->
+						<div class="form-group">
+							<label class="form-label">New Password</label> <input
+								type="password" name="newPassword" class="form-control"
+								placeholder="••••••••" autocomplete="new-password">
+						</div>
+
+						<div class="form-group">
+							<label class="form-label">Confirm New Password</label> <input
+								type="password" name="confirmPassword" class="form-control"
+								placeholder="••••••••" autocomplete="new-password">
+						</div>
+					</div>
+				</div>
+
+				<div class="form-action-row" style="margin-top: 20px;">
+					<a th:href="@{/user/dashboard}" class="btn-global btn-secondary"><i
+						class="bi bi-x-circle"></i>Cancel</a>
+					<button type="submit" class="btn-global btn-primary">
+						<i class="bi bi-check-circle-fill"></i>Save Changes
+					</button>
+				</div>
+			</form>
+		</div>
+
+	</main>
+</body>
+</html>

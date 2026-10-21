@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Profile — RecipeBox')}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/admin-header :: global-header('admin-profile')}"></div>
+
+	<main class="container">
+
+		<div class="form-card" style="max-width: 600px; margin: 0 auto;">
+			<div class="form-title-area">
+				<h2>Admin Profile</h2>
+				<p>
+					Viewing administrator account details for <span
+						th:text="${user.name}">Admin</span>.
+				</p>
+			</div>
+
+			<div class="detail-container">
+				<div class="detail-row">
+					<div class="detail-label">Full Name</div>
+					<div class="detail-value" th:text="${user.name}">John Doe</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Email Address</div>
+					<div class="detail-value" th:text="${user.email}">admin@example.com</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Role</div>
+					<div class="detail-value" th:text="${user.role}">ADMIN</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Member Since</div>
+					<div class="detail-value"
+						th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}">
+						2026-07-15 15:00:00</div>
+				</div>
+			</div>
+
+			<div class="form-action-row">
+				<a th:href="@{/admin/dashboard}" class="btn-global btn-secondary">
+				<i class="bi bi-arrow-left"></i>Back to Dashboard</a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

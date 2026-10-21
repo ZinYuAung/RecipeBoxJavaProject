@@ -1,0 +1,496 @@
+/* ==========================================================================
+   1. GLOBAL RESET & BASE STYLES
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #fcfcfc;
+  color: #111827;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ==========================================================================
+   2. DYNAMIC GLOBAL HEADER (Shared Across All Pages)
+   ========================================================================== */
+.global-header {
+  width: 100%;
+  background: #ffffff;
+  padding: 14px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Brand Identity */
+.global-header .global-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.global-header .global-logo .logo-icon { font-size: 24px; color: #f97316; }
+.global-header .global-logo .logo-text { font-size: 22px; font-weight: 800; color: #111827; }
+.global-header .global-logo .logo-text span { color: #f97316; }
+
+/* Navigation Links Layout */
+.global-header .header-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.global-header .nav-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Admin Specific Scoping */
+.global-header .admin-nav-group {
+  border-left: 2px solid #e2e8f0;
+  padding-left: 20px;
+  margin-left: 10px;
+}
+
+.global-header .admin-badge {
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Navigation Links Styling */
+.global-header .nav-link {
+  color: #475569;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.global-header .nav-link:hover, 
+.global-header .nav-link.active {
+  color: #f97316;
+}
+
+.global-header .admin-link {
+  color: #64748b;
+}
+.global-header .admin-link:hover, 
+.global-header .admin-link.active {
+  color: #dc2626;
+}
+
+/* Right Side Controls */
+.global-header .header-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Header Integrated Search (Scoped to avoid affecting forms) */
+.global-header .search-container { 
+  position: relative; 
+  width: 100%; 
+  max-width: 360px; 
+}
+.global-header .search-input {
+  width: 100%;
+  padding: 10px 16px 10px 42px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 14px;
+  outline: none;
+  background-color: #f9fafb;
+  color: #1f2937;
+  transition: all 0.2s ease;
+}
+.global-header .search-input:focus {
+  background-color: #ffffff;
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.08);
+}
+.global-header .search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+/* Action Buttons */
+.global-header .auth-buttons .login-btn {
+  color: #f97316;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 24px;
+  border: 2px solid #f97316;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+.global-header .auth-buttons .login-btn:hover { 
+  background-color: #f97316; 
+  color: #ffffff; 
+}
+
+/* Profile Controls */
+.global-header .user-profile-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+}
+.global-header .welcome-user {
+  color: #334155;
+}
+.global-header .logout-btn {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.global-header .logout-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+
+/* ==========================================================================
+   3. PUBLIC HOME LANDING PAGE & HERO SECTION
+   ========================================================================== */
+.hero-section {
+  position: relative;
+  min-height: 600px;
+  height: 70vh;
+  background-color: #ea580c;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-content { max-width: 800px; color: #ffffff; margin-bottom: 60px; }
+.hero-content h1 { font-size: 54px; font-weight: 800; line-height: 1.15; margin-bottom: 18px; letter-spacing: -1px; }
+.hero-content p { font-size: 18px; color: rgba(255, 255, 255, 0.95); line-height: 1.6; margin-bottom: 32px; max-width: 650px; margin: 0 auto 32px auto; }
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f97316;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+  transition: all 0.2s ease;
+}
+.cta-btn:hover { background-color: #ea580c; transform: translateY(-1px); }
+.cta-btn span.arrow { font-size: 18px; transition: transform 0.2s ease; }
+.cta-btn:hover span.arrow { transform: translateX(4px); }
+
+/* Features Card Grid Layout */
+.features-container { max-width: 1200px; width: 100%; margin: -100px auto 60px auto; padding: 0 20px; position: relative; z-index: 10; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.feature-card { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.feature-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); }
+.card-icon { font-size: 32px; color: #f97316; margin-bottom: 16px; display: inline-block; }
+.feature-card h3 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+.feature-card p { font-size: 14px; color: #6b7280; line-height: 1.5; }
+
+/*///////////////////*/
+.features-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: -80px auto 0 auto; /* Negative top margin pulls the section UP into the hero */
+  padding: 0 20px;
+  position: relative;
+  z-index: 10; /* Ensures the cards stay on top of the background image */
+}
+
+.feature-card {
+  background: #ffffff;
+  flex: 1;
+  padding: 30px 25px;
+  border-radius: 20px; /* Smooth rounded corners like photo 1 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* Soft shadow effect */
+  text-align: left;
+}
+
+.feature-card h3 {
+  font-size: 18px;
+  color: #0b1a30;
+  margin: 15px 0 10px 0;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: #667085;
+  line-height: 1.5;
+}
+/* ==========================================================================
+   4. SPLIT-SCREEN AUTHENTICATION LAYOUT SYSTEM (Login & Signup - Fixed No-Scroll)
+   ========================================================================== */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.auth-page-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  padding: 16px 20px; /* Padding လျှော့ချထားပါသည် */
+  min-height: calc(100vh - 65px); /* Header height နှင့် ညှိထားပါသည် */
+  box-sizing: border-box;
+}
+
+/* Card Wrapper */
+.split-auth-card {
+  display: flex;
+  background: #ffffff;
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  max-height: calc(100vh - 90px); /* Card အမြင့်ကို Screen ထက် မကျော်စေရန် ထိန်းပေးပါသည် */
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* Left Side Banner Graphic */
+.auth-banner-side {
+  flex: 1.1;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 36px;
+  position: relative;
+}
+
+.banner-overlay-content {
+  color: #ffffff;
+  z-index: 2;
+  max-width: 420px;
+}
+
+.banner-overlay-content h2 {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.banner-overlay-content p {
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Right Side Form Graphic */
+.auth-form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 40px;
+  background: #ffffff;
+  overflow-y: auto; /* Screen သေးပါက Form ဘက်ခြမ်းသာ Scroll ပေါ်မည် */
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-form-side h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.form-subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+/* Inputs and Forms Controls */
+.auth-form-side .form-group {
+  margin-bottom: 16px; /* Margin-bottom များကို ကျစ်လစ်စေရန် လျှော့ချထားပါသည် */
+}
+
+.auth-form-side .form-group label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.auth-form-side .form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.auth-form-side .form-control::placeholder {
+  color: #94a3b8;
+}
+
+.auth-form-side .form-control:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Password Eye Wrap */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 14px;
+  user-select: none;
+}
+
+/* Context Links */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.forgot-password-link {
+  color: #f97316;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+/* Interaction Button */
+.auth-submit-btn {
+  width: 100%;
+  background-color: #f97316;
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+  transition: all 0.2s ease;
+}
+
+.auth-submit-btn:hover {
+  background-color: #ea580c;
+  transform: translateY(-1px);
+}
+
+/* Footer Switch Context Links */
+.auth-footer {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+.auth-footer a {
+  color: #f97316;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   5. RESPONSIVE MEDIA BREAKPOINTS
+   ========================================================================== */
+
+/* Header Mobile Switch */
+@media (max-width: 768px) {
+  .global-header { padding: 12px 20px; flex-direction: column; gap: 12px; }
+  .global-header .search-container { max-width: 100%; margin: 4px 0; order: 3; }
+  .hero-content h1 { font-size: 36px; }
+  .features-container { margin-top: -40px; }
+}
+
+/* Split Form Responsive Layout View (Matches image_7dbe22.png requirements) */
+@media (max-width: 900px) {
+  .split-auth-card {
+    flex-direction: column;
+    max-width: 500px;
+    min-height: auto;
+  }
+  .auth-banner-side {
+    display: none; /* Fallback on small devices to display input cleanly */
+  }
+  .auth-form-side {
+    padding: 40px 24px;
+  }
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Admin User Details — RecipeBox')}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/admin-header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>User Details</h2>
+				<p> Viewing profile information for 
+				<span th:text="${user.name}">John Doe</span>.
+				</p>
+			</div>
+
+			<div class="detail-container">
+				<div class="detail-row">
+					<div class="detail-label">Full Name</div>
+					<div class="detail-value" th:text="${user.name}">John Doe</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Email</div>
+					<div class="detail-value" th:text="${user.email}">john@example.com</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Role</div>
+					<div class="detail-value" th:text="${user.role}">Admin</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">Created At</div>
+					<div class="detail-value"
+						th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}">2026-07-15
+						15:00:00</div>
+				</div>
+			</div>
+
+			<div class="form-action-row">
+				<a th:href="@{/admin/users}" class="btn-global btn-secondary"> <i
+					class="bi bi-x-circle"></i>Cancel
+				</a> <a th:href="@{/admin/edit/{id}(id=${user.userId})}"
+					class="btn-global btn-primary"> <i
+					class="bi bi-check-circle-fill"></i>Update User
+				</a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

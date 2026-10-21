@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit User — FlavorFold</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<style>
+.form-row-2col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+</style>
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Edit User</h2>
+				<p th:text="'Update account settings for User #' + ${user.userId}">Update
+					account settings.</p>
+			</div>
+
+			<form
+				th:action="${isSelfEdit} ? @{/user/profile/update} : @{/admin/update}"
+				th:object="${user}" method="POST">
+				<input type="hidden" th:field="*{userId}"> <input
+					type="hidden" th:field="*{email}">
+
+				<div class="form-group">
+					<label class="form-label">Name</label> <input type="text"
+						th:field="*{name}" class="form-control" required>
+				</div>
+
+
+				<div class="form-row-2col" th:if="${!isSelfEdit}">
+					<div class="form-group">
+						<label class="form-label">Role</label> <select th:field="*{role}"
+							class="form-control">
+							<option value="USER">User</option>
+							<option value="ADMIN">Admin</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Active Status</label> <select
+							th:field="*{is_active}" class="form-control">
+							<option value="true">Active (Yes)</option>
+							<option value="false">Inactive (No)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-action-row">
+
+					<a th:href="${isSelfEdit} ? @{/user/dashboard} : @{/admin/users}"
+						class="btn-global btn-secondary">Cancel</a>
+					<button type="submit" class="btn-global btn-primary">Save
+						Changes</button>
+				</div>
+			</form>
+		</div>
+
+	</main>
+</body>
+</html>

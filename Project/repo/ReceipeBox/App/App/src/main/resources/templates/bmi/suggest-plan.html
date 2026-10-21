@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Suggested Plan — RecipeBox</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/meal-plan-style.css}">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+	<div th:replace="~{fragments/user-header :: global-header('bmi')}"></div>
+
+	<main class="container">
+		<div class="crud-header"
+			style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+			<div class="crud-title">
+				<h2>
+					<span th:if="${isSavedView}">Your Diet Plan </span> <span
+						th:unless="${isSavedView}">Your Personalized 7-Day Meal
+						Plan</span> <span th:if="${isSavedView and savedPlan.isActive}"
+						style="background: #22c55e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-left: 8px;">
+						⭐ Active Plan </span>
+				</h2>
+				<p>
+					Tailored specifically for target BMI : <strong
+						th:text="${bmiCategory}"
+						th:style="${bmiCategory == 'NORMAL' ? 'color: green;' : 
+                       (bmiCategory == 'UNDERWEIGHT' ? 'color: blue;' : 
+                       (bmiCategory == 'OVERWEIGHT' ? 'color: orange;' : 'color: red;'))}">Normal</strong> <span
+						style="margin-left: 8px; background-color: #f8fafc; color: #334155; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; display: inline-block;">
+						🔥 <span th:switch="${bmiCategory}"> <span
+							th:case="'UNDERWEIGHT'">550 - 850</span> <span th:case="'NORMAL'">400
+								- 700</span> <span th:case="'OVERWEIGHT'">300 - 500</span> <span
+							th:case="'OBESE'">250 - 450</span> <span th:case="*">400 -
+								700</span>
+					</span> kcal / meal
+					</span>
+				</p>
+			</div>
+			<div style="display: flex; gap: 12px; align-items: center;">
+
+				<th:block th:if="${isSavedView}">
+					<form th:if="${!savedPlan.isActive}"
+						th:action="@{/user/meal-plans/set-active/{id}(id=${savedPlan.planId})}"
+						method="POST" style="margin: 0;">
+						<button type="submit" class="btn-global btn-primary"
+							style="padding: 8px 16px; display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; font-weight: 500; cursor: pointer;">
+							<i class="bi bi-star-fill"></i> Set as Active Plan
+						</button>
+					</form>
+
+					<a th:href="@{/user/saved-plans}" class="btn-global btn-secondary"
+						style="padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; font-weight: 500;">
+						<i class="bi bi-arrow-left"></i> Back to Saved Plans
+					</a>
+				</th:block>
+				<th:block th:unless="${isSavedView}">
+					<a
+						th:href="@{/user/meal-plans/suggest(calculatedBmiCategory=${bmiCategory})}"
+						class="btn-global btn-danger"
+						style="padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; font-weight: 500;">
+						<i class="bi bi-arrow-repeat"></i> Regenerate Plan
+					</a>
+					<form th:action="@{/user/meal-plans/save}" method="POST"
+						style="margin: 0;">
+						<input type="hidden" name="bmiCategory" th:value="${bmiCategory}">
+						<button type="submit" class="btn-create btn-global btn-primary"
+							style="padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; font-weight: 500;">
+							<i class="bi bi-bookmark-check"></i> Save Plan
+						</button>
+					</form>
+					<a th:href="@{/user/bmi}" class="btn-global btn-secondary"
+						style="padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 30px; font-weight: 500;">
+						<i class="bi bi-arrow-left"></i> Back to Dashboard
+					</a>
+				</th:block>
+
+			</div>
+		</div>
+
+		<div class="meal-timeline-stack">
+			<div class="timeline-day-card"
+				th:each="dayNum : ${#numbers.sequence(1, 7)}">
+				<div class="day-indicator">
+					<h3>
+						<a th:if="${isSavedView}"
+							th:href="@{/user/meal-plans/view/{planId}/day/{dayNum}(planId=${savedPlan.planId}, dayNum=${dayNum})}"
+							style="text-decoration: none; color: inherit;"> Day <span
+							th:text="${dayNum}">1</span>
+						</a> <span th:unless="${isSavedView}"> Day <span
+							th:text="${dayNum}">1</span>
+						</span>
+					</h3>
+				</div>
+				<div class="day-meals-grid">
+					<div th:each="item : ${suggestedItems}"
+						th:if="${item.dayNumber == dayNum}" class="meal-slot-item">
+						<div class="meal-type-badge" th:text="${item.mealType}">Breakfast
+						</div>
+						<a
+							th:href="@{/user/recipe-view/{id}(id=${item.recipe.recipeId}, returnUrl=${isSavedView ? '/user/meal-plans/view/' + savedPlan.planId + '/day/' + dayNum : '/user/meal-plans/suggest'})}"
+							style="text-decoration: none; color: inherit; display: block;">
+
+							<div class="meal-mini-card">
+								<img
+									th:src="${#strings.isEmpty(item.recipe.imageUrl)} ? @{/images/default-recipe.jpg} : @{'/uploads/' + ${item.recipe.imageUrl}}"
+									alt="Meal Graphic">
+								<div class="mini-card-details">
+									<h4 th:text="${item.recipe.name}">Recipe Name</h4>
+									<span class="cooking-duration">⏱️ <span
+										th:text="${item.recipe.cookingTimeMin}">20</span> Mins
+									</span>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</main>
+
+</body>
+</html>

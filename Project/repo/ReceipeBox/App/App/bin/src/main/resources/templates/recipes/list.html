@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Recipes Directory — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" th:href="@{/css/alert.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-recipes')}"></div>
+
+	<main class="container">
+
+		<div class="crud-header">
+			<div class="crud-title">
+				<h2>Recipes Database</h2>
+				<p>Manage, edit, or remove recipes available in the ecosystem.</p>
+			</div>
+			<a th:href="@{/admin/recipe/create}" class="btn-global btn-primary">➕
+				Add New Recipe</a>
+		</div>
+
+		<div class="card-table-wrapper">
+			<table class="global-table">
+				<thead>
+					<tr>
+						<th>No.</th>
+						<th>Recipe Name</th>
+						<th>Meal Type</th>
+						<th>BMI Category</th>
+						<th>Time (Min)</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="recipe, stat : ${recipes}">
+						<td th:text="${stat.count}">1</td>
+						<td th:text="${recipe.name}" style="font-weight: 600;"></td>
+						<td th:text="${recipe.mealType}"></td>
+						<td><span th:if="${recipe.bmiCategory != null}"
+							th:text="${recipe.bmiCategory}"
+							th:class="${'badge badge-' + recipe.bmiCategory.toString().toLowerCase()}">
+						</span> <span th:if="${recipe.bmiCategory == null}"
+							class="badge badge-secondary">N/A</span></td>
+						<td th:text="${recipe.cookingTimeMin} + ' min'"></td>
+						<td><span th:if="${recipe.isActive}"
+							class="badge badge-success">Active</span> <span
+							th:if="${!recipe.isActive}" class="badge badge-danger">Inactive</span>
+						</td>
+						<td>
+							<div class="btn-action-group">
+								<a th:href="@{/admin/recipe/view/{id}(id=${recipe.recipeId})}"
+									class="btn-global btn-secondary">👁️</a> <a
+									th:href="@{/admin/recipe/edit/{id}(id=${recipe.recipeId})}"
+									class="btn-global btn-secondary">✏️</a>
+								<button type="button" class="btn-global btn-secondary "
+									th:onclick="openDeleteCard([[${recipe.recipeId}]], [[${recipe.name}]])">🗑️</button>
+							</div>
+						</td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(recipes)}">
+						<td colspan="6"
+							style="text-align: center; color: #64748b; padding: 40px;">No
+							recipes found.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800;">Confirm
+				Deletion</h3>
+			<p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b;">
+				Are you sure you want to delete <strong id="modalTargetName"
+					style="color: var(--primary-color);"></strong>?
+			</p>
+			<form th:action="@{/admin/recipe/delete}" method="POST">
+				<input type="hidden" name="id" id="modalTargetId" value="">
+				<div
+					style="display: flex; justify-content: flex-end; border-top: none;">
+					<button type="button" class="btn-global btn-secondary"
+						onclick="closeDeleteCard()">Cancel</button>
+					<button type="submit" class="btn-global btn-danger"
+						style="margin-left: 12px;">Delete</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript" th:inline="javascript">
+		const modal = document.getElementById('deleteModal');
+		const modalIdInput = document.getElementById('modalTargetId');
+		const modalNameSpan = document.getElementById('modalTargetName');
+
+		function openDeleteCard(id, name) {
+			modalIdInput.value = id;
+			modalNameSpan.textContent = "'" + name + "'";
+			modal.classList.add('active');
+		}
+
+		function closeDeleteCard() {
+			modal.classList.remove('active');
+		}
+
+		window.onclick = function(event) {
+			if (event.target === modal) {
+				closeDeleteCard();
+			}
+		}
+	</script>
+
+</body>
+</html>

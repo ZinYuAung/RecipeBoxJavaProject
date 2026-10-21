@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Bmi History — RecipeBox')}">
+</head>
+<body>
+	<div th:replace="~{fragments/user-header :: global-header('bmi')}"></div>
+
+	<main class="list-container">
+
+		<div th:if="${message}" id="alertMessage" class="alert-msg">
+			<i class="bi bi-check-circle-fill"></i> <span th:text="${message}">BMI
+				record deleted successfully!</span>
+		</div>
+		
+		<div class="crud-header"
+			style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+			<div>
+				<h3>Your Body Mass Index (BMI)</h3>
+				<p style="color: #64748b; margin-top: 4px;">Track your health
+					parameters and generate tailored dietary plans.</p>
+			</div>
+			<a th:href="@{/user/bmi/bmiForm}" class="btn-global btn-primary"
+				style="padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700;">
+				➕ Calculate New BMI </a>
+		</div>
+		<div th:if="${latestRecord != null}" class="bmi-card"
+			style="border: 2px solid var(--primary-color); background: #f8fafc;">
+			<div
+				style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+				<div>
+					<span
+						style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-color);">Latest
+						Active Record</span>
+					<h1
+						style="font-size: 42px; font-weight: 800; margin: 8px 0; color: #0f172a;"
+						th:text="${latestRecord.bmiValue}">22.5</h1>
+
+					<span
+						th:class="${'badge-category bg-' + #strings.toLowerCase(latestRecord.bmiCategory)}"
+						th:text="${latestRecord.bmiCategory}">NORMAL</span>
+
+					<p style="color: #475569; margin-top: 12px; font-size: 14px;">
+						<strong>Weight:</strong> [[${latestRecord.weight}]] kg | <strong>Height:</strong>
+						[[${latestRecord.height}]] cm | <strong>Age:</strong>
+						[[${latestRecord.age}]] | <strong>Gender:</strong>
+						[[${latestRecord.gender}]]
+					</p>
+					<small style="color: #94a3b8;">Recorded on:
+						[[${#temporals.format(latestRecord.recordedAt, 'yyyy-MM-dd
+						HH:mm')}]]</small>
+				</div>
+				<div
+					style="display: flex; flex-direction: column; gap: 10px; align-self: center;">
+					<a
+						th:href="@{/user/meal-plans/suggest(category=${latestRecord.bmiCategory})}"
+						class="btn-global btn-primary"
+						style="padding: 12px 20px; text-decoration: none; border-radius: 25px; font-weight: 700; text-align: center;">
+						🥗 Get Meal Plan For This BMI </a>
+				</div>
+			</div>
+		</div>
+
+		<div class="bmi-card" th:if="${!#lists.isEmpty(bmiHistory)}">
+			<h3 style="margin-bottom: 16px; font-weight: 700; color: #0f172a;">Calculation
+				History</h3>
+
+			<div style="overflow-x: auto;">
+				<table
+					style="width: 100%; border-collapse: collapse; text-align: left;">
+					<thead>
+						<tr
+							style="border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 13px;">
+							<th style="padding: 12px 8px;">Date</th>
+							<th style="padding: 12px 8px;">BMI Score</th>
+							<th style="padding: 12px 8px;">Category</th>
+							<th style="padding: 12px 8px;">Parameters</th>
+							<th style="padding: 12px 8px; text-align: right;">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="record : ${bmiHistory}"
+							style="border-bottom: 1px solid #f1f5f9; font-size: 14px;">
+							<td style="padding: 14px 8px; color: #64748b;"
+								th:text="${#temporals.format(record.recordedAt, 'yyyy-MM-dd')}">2026-07-21</td>
+							<td style="padding: 14px 8px; font-weight: 800; color: #0f172a;"
+								th:text="${record.bmiValue}">24.2</td>
+							<td style="padding: 14px 8px;"><span
+								th:class="${'badge-category bg-' + #strings.toLowerCase(record.bmiCategory)}"
+								th:text="${record.bmiCategory}">Normal</span></td>
+							<td style="padding: 14px 8px; color: #475569;">
+								[[${record.weight}]] kg / [[${record.height}]] cm</td>
+							<td style="padding: 14px 8px; text-align: right;">
+								<div
+									style="display: inline-flex; align-items: center; gap: 8px;">
+									<a
+										th:href="@{/user/meal-plans/suggest(category=${record.bmiCategory})}"
+										class="btn-global btn-secondary"
+										style="font-size: 12px; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-weight: 600;">
+										Suggest Plan ➔ </a>
+									<button type="button" class="btn-global btn-danger"
+										th:onclick="openDeleteCard([[${record.bmiId}]], [[${#temporals.format(record.recordedAt, 'yyyy-MM-dd')} + ' (BMI: ' + ${record.bmiValue} + ')']])"
+										title="Delete Record">
+										<i class="bi bi-trash3"></i>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div th:if="${#lists.isEmpty(bmiHistory)}" class="bmi-card"
+			style="text-align: center; padding: 48px 20px;">
+			<span style="font-size: 48px; display: block; margin-bottom: 12px;">⚖️</span>
+			<h3 style="font-weight: 700; color: #0f172a;">No BMI Records
+				Found</h3>
+			<p style="color: #64748b; margin-bottom: 20px;">You haven't
+				calculated or saved any BMI metrics yet.</p>
+			<a th:href="@{/user/bmi/bmiForm}" class="btn-global btn-primary"
+				style="padding: 10px 24px; border-radius: 30px; text-decoration: none;">
+				Calculate Your BMI </a>
+		</div>
+
+		<div
+			style="display: flex; justify-content: center; margin-top: auto; padding-top: 20px; padding-bottom: 20px;">
+			<nav aria-label="Page navigation"
+				style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 50rem; padding: 6px 16px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 8px;">
+
+				<!-- Previous Button -->
+				<a th:if="${bmiPage.hasPrevious()}"
+					th:href="@{/user/bmi/history(page=${bmiPage.number - 1}, size=${bmiPage.size})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&lt;</a>
+				<span th:unless="${bmiPage.hasPrevious()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&lt;</span>
+
+				<!-- Page Numbers Loop -->
+				<th:block
+					th:with="current=${bmiPage.number}, total=${bmiPage.totalPages == 0 ? 1 : bmiPage.totalPages}">
+					<span th:each="i : ${#numbers.sequence(0, total - 1)}"> <th:block
+							th:if="${i == 0 || i == total - 1 || (i >= current - 1 && i <= current + 1)}">
+							<a th:if="${i != current}"
+								th:href="@{/user/bmi/history(page=${i}, size=${bmiPage.size})}"
+								th:text="${i + 1}"
+								style="color: #4b5563; text-decoration: none; padding: 6px 10px; font-size: 14px; font-weight: 500; border-radius: 50%;">1</a>
+
+							<!-- Active Page Pill Style -->
+							<span th:if="${i == current}" th:text="${i + 1}"
+								style="background-color: #6366f1; color: #ffffff; padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 50rem; display: inline-block; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.4);">1</span>
+						</th:block> <!-- Ellipsis (...) --> <span
+						th:if="${(i == current - 2 && i > 0) || (i == current + 2 && i < total - 1)}"
+						style="color: #9ca3af; padding: 0 4px; font-size: 14px;">...</span>
+					</span>
+				</th:block>
+
+				<!-- Next Button -->
+				<a th:if="${bmiPage.hasNext()}"
+					th:href="@{/user/bmi/history(page=${bmiPage.number + 1}, size=${bmiPage.size})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&gt;</a>
+				<span th:unless="${bmiPage.hasNext()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&gt;</span>
+
+			</nav>
+		</div>
+
+	</main>
+
+	<!-- Delete Modal -->
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800;">Confirm
+				Deletion</h3>
+			<p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b;">
+				Are you sure you want to delete the BMI record for <strong
+					id="modalTargetName" style="color: var(--primary-color);"></strong>?
+			</p>
+			<form th:action="@{/user/bmi/delete}" method="POST">
+				<input type="hidden" name="id" id="modalTargetId" value="">
+				<div
+					style="display: flex; justify-content: flex-end; border-top: none; gap: 12px;">
+					<button type="button" class="btn-global btn-secondary"
+						onclick="closeDeleteCard()">Cancel</button>
+					<button type="submit" class="btn-global btn-danger">Delete</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript" th:inline="javascript">
+	const modal = document.getElementById('deleteModal');
+	const modalIdInput = document.getElementById('modalTargetId');
+	const modalNameSpan = document.getElementById('modalTargetName');
+
+	function openDeleteCard(id, recordDetails) {
+		modalIdInput.value = id;
+		modalNameSpan.textContent = "'" + recordDetails + "'"; 
+		modal.classList.add('active');
+	}
+
+	function closeDeleteCard() {
+		modal.classList.remove('active');
+	}
+
+	window.onclick = function(event) {
+		if (event.target === modal) {
+			closeDeleteCard();
+		}
+	}
+	
+	setTimeout(() => {
+	    const alert = document.getElementById("alertMessage");
+	    if (alert) {
+	        alert.classList.add("alert-msg-hide");
+	        setTimeout(() => {
+	            alert.remove();
+	        }, 3000);
+	    }
+	}, 500);
+</script>
+</body>
+</html>

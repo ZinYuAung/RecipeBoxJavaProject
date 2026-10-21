@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('User Dashboard — RecipeBox')}">
+</head>
+<body>
+
+
+	<div
+		th:replace="~{fragments/user-header :: global-header('user-dashboard')}"></div> 
+	<main class="container" >
+		<div class="crud-header" >
+			<div class="crud-title">
+				<div th:if="${searchQuery != null}">
+				
+					<p>Showing recipes and ingredients that match your search.</p>
+					
+				</div>
+				<div th:if="${searchQuery == null}">
+					<h2>Explore Culinary Collections</h2>
+					<p>Hand-picked recipes customized for your taste buds and
+						cooking preferences.</p>
+				</div>
+			</div>
+
+
+			<div class="meal-type-pills" th:if="${searchQuery == null}">
+				<a th:href="@{/user/dashboard}" class="pill-badge"
+					th:classappend="${selectedMealType == null} ? 'active'">All
+					Recipes</a> <a th:href="@{/user/dashboard(mealType='BREAKFAST')}"
+					class="pill-badge"
+					th:classappend="${selectedMealType == 'BREAKFAST'} ? 'active'">Breakfast</a>
+
+				<a th:href="@{/user/dashboard(mealType='LUNCH')}" class="pill-badge"
+					th:classappend="${selectedMealType == 'LUNCH'} ? 'active'">Lunch</a>
+
+				<a th:href="@{/user/dashboard(mealType='DINNER')}"
+					class="pill-badge"
+					th:classappend="${selectedMealType == 'DINNER'} ? 'active'">Dinner</a>
+
+				<a th:href="@{/user/dashboard(mealType='SNACK')}" class="pill-badge"
+					th:classappend="${selectedMealType == 'SNACK'} ? 'active'">Snack</a>
+			</div>
+		</div>
+
+		<!-- RECIPE GRID DISPLAY -->
+		<div class="recipe-showcase-grid" th:if="${!#lists.isEmpty(recipes)}">
+
+			<div th:each="recipe, iterStat : ${recipes}"
+				th:class="${iterStat.first} ? 'recipe-card large-feature-card' : 'recipe-card standard-card'">
+
+				<div class="card-image-box">
+					<img
+						th:src="${#strings.isEmpty(recipe.imageUrl)} ? @{/images/default-recipe.jpg} : @{'/uploads/' + ${recipe.imageUrl}}"
+						alt="Recipe Artwork"> <span class="card-floating-tag"
+						th:text="${recipe.mealType}">Dinner</span>
+				</div>
+
+				<!-- Card Meta Descriptions Area -->
+				<div class="card-details-box">
+					<div class="meta-row-top">
+						<span class="cooking-duration"> ⏱️ <span
+							th:text="${recipe.cookingTimeMin}">30</span> Mins
+						</span> <span class="difficulty-indicator">Easy</span>
+					</div>
+
+					<h3 class="recipe-display-title" th:text="${recipe.name}">Recipe
+						Name Placeholder</h3>
+					<p class="recipe-display-desc" th:text="${recipe.description}">A
+						brief summary description highlighting this particular recipe
+						entry step.</p>
+
+					<div class="card-action-footer"  >
+						<a th:href="@{/user/recipe-view/{id}(id=${recipe.recipeId})}"
+							class="btn-view-recipe"> View Recipe <span>➔</span>
+						</a>
+
+						<!-- <form
+							th:action="@{/user/favorites/toggle/{id}(id=${recipe.recipeId})}"
+							method="POST" class="favorite-form">
+							<button type="submit" class="btn-favorite-heart">
+								<i class="bi bi-heart-fill"></i>
+							</button>
+						</form> -->
+						<form
+							th:action="@{/user/favorites/toggle/{id}(id=${recipe.recipeId})}"
+							method="POST" class="favorite-form">
+							<button type="submit" class="btn-favorite-heart" style="background: none; border: none; cursor: pointer;">
+								<i class="bi bi-heart-fill"
+								   th:style="${userFavoriteIds != null and userFavoriteIds.contains(recipe.recipeId)} ? 'color: #ef4444; font-size: 18px;' : 'color: #ffffff; -webkit-text-stroke: 1px #cbd5e1; font-size: 18px;'"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- EMPTY STATE HANDLING -->
+		<div th:if="${#lists.isEmpty(recipes)}" class="card-table-wrapper"
+			style="text-align: center; padding: 60px 20px;">
+			<span style="font-size: 48px; display: block; margin-bottom: 16px;">🔍</span>
+
+			<!-- IF SEARCH RETURNED NO RESULTS -->
+			<div th:if="${searchQuery != null}">
+				<h3
+					style="color: var(--dark-slate); font-weight: 700; margin-bottom: 6px;">
+					No Results Found for "<span th:text="${searchQuery}"></span>"
+				</h3>
+				<p style="color: #64748b; font-size: 14px; margin-bottom: 16px;">
+					We couldn't find any recipes or ingredients matching your query.
+					Try searching for something else!</p>
+				<a th:href="@{/user/dashboard}" class="btn-global btn-secondary">Back
+					to Dashboard</a>
+			</div>
+
+			<!-- DEFAULT EMPTY DATABASE OR FILTER NO MATCH -->
+			<div th:if="${searchQuery == null}">
+				<h3
+					style="color: var(--dark-slate); font-weight: 700; margin-bottom: 6px;">No
+					Recipes Available</h3>
+				<p style="color: #64748b; font-size: 14px;">No recipes match the
+					selected category right now. Check back later!</p>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>

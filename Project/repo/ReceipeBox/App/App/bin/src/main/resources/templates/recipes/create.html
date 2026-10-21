@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Create Recipe — Admin</title>
+<link rel="stylesheet" th:href="@{/css/global-style.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+	<div th:replace="~{fragments/header :: global-header('admin-recipes')}"></div>
+
+	<main class="container" style="margin: 24px auto;">
+		<!-- Compact Workspace Card -->
+		<div class="compact-workspace-card">
+
+			<!-- LEFT COLUMN (Exactly 1/3 Width, 100% Height Image Preview) -->
+			<div class="workspace-preview-left">
+
+				<!-- Center Placeholder: Clicking this area opens the file chooser -->
+				<label id="imagePlaceholder"
+					class="preview-placeholder-center clickable-upload-area"> <span
+					class="placeholder-icon">📷</span>
+					<p class="placeholder-text">Click anywhere here to upload an
+						image</p> <input type="file" name="imageFile"
+					class="hidden-file-input" accept="image/*"
+					onchange="if(this.files && this.files[0]){
+                             let reader = new FileReader();
+                             reader.onload = (e) => {
+                                 document.getElementById('imageDisplay').src = e.target.result;
+                                 document.getElementById('imageDisplay').style.display = 'block';
+                                 document.getElementById('imagePlaceholder').style.display = 'none';
+                             };
+                             reader.readAsDataURL(this.files[0]);
+                         }">
+				</label>
+
+				<!-- Live Loaded Image Container (Initially Hidden) -->
+				<img id="imageDisplay" src="" class="preview-loaded-image"
+					style="display: none;" alt="Recipe Cover image">
+			</div>
+
+			<!-- RIGHT COLUMN (Exactly 2/3 Width: Form Fields) -->
+			<div class="workspace-form-right">
+				<div class="form-title-area"
+					style="margin-bottom: 20px; padding-bottom: 12px;">
+					<h2>Create New Recipe</h2>
+					<p>Fill in the details to add a new delicious recipe to the
+						collection.</p>
+				</div>
+
+				<!-- IMPORTANT: added enctype="multipart/form-data" for local file binary transfer -->
+				<form th:action="@{/admin/recipe/save}" th:object="${recipe}"
+					method="POST" enctype="multipart/form-data"
+					style="display: flex; flex-direction: column; gap: 16px;">
+
+					<!-- Recipe Name -->
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label">Recipe Name</label> <input type="text"
+							th:field="*{name}" class="form-control"
+							placeholder="e.g. Traditional Spicy Curry" required>
+					</div>
+
+					<!-- Multi-column Row: Cooking Time & Meal Type -->
+					<div class="form-row-2col">
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Cooking Time (mins)</label> <input
+								type="number" th:field="*{cookingTimeMin}" class="form-control"
+								placeholder="e.g. 45" required>
+						</div>
+
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Meal Type</label>
+							<!-- Onchange keeps the floating badge in the preview updated dynamically -->
+							<select id="recipeTypeSelect" th:field="*{mealType}"
+								class="form-control"
+								onchange="document.getElementById('badgeDisplay').textContent = this.value"
+								required>
+								<option value="Breakfast">Breakfast</option>
+								<option value="Lunch">Lunch</option>
+								<option value="Dinner">Dinner</option>
+								<option value="Snack">Snack</option>
+							</select>
+						</div>
+
+						<!-- bmicategory -->
+						<div class="form-group" style="margin-bottom: 0;">
+							<label class="form-label">Target BMI Category</label> <select
+								th:field="*{bmiCategory}" class="form-control" required>
+								<option value="UNDERWEIGHT">Underweight</option>
+								<option value="NORMAL">Normal</option>
+								<option value="OVERWEIGHT">Overweight</option>
+								<option value="OBESE">Obese</option>
+							</select>
+						</div>
+
+					</div>
+
+					<!-- LOCAL FILE UPLOAD (Replaces your old Image URL) -->
+					<div class="form-group" style="margin-bottom: 0;"></div>
+
+					<!-- Description Area -->
+					<div class="form-group" style="margin-bottom: 0;">
+						<label class="form-label">Description</label>
+						<textarea th:field="*{description}" class="form-control" rows="3"
+							placeholder="Describe the recipe steps or ingredients..."></textarea>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="form-action-row"
+						style="margin-top: 10px; padding-top: 16px;">
+						<a th:href="@{/admin/recipe/list}"
+							class="btn-global btn-secondary">Cancel</a>
+						<button type="submit" class="btn-global btn-primary">Save
+							Recipe</button>
+					</div>
+
+				</form>
+			</div>
+
+		</div>
+	</main>
+
+</body>
+</html>

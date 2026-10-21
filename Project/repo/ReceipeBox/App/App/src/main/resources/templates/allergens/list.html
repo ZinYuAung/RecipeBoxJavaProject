@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Manage Allergens — RecipeBox')}">
+</head>
+<body>
+
+	<!-- Dynamic Global Navbar Fragment Header Component -->
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-allergens')}"></div>
+
+	<main class="list-container">
+		<div th:if="${message}" id="alertMessage" class="alert-msg">
+			<i class="bi bi-check-circle-fill"></i> <span th:text="${message}">BMI
+				record deleted successfully!</span>
+		</div>
+		<!-- error,success alert box -->
+		<div th:if="${errorMessage}" id="errorAlert" class="alert-msg-danger">
+			<i class="bi bi-exclamation-triangle"></i> <span
+				th:text="${errorMessage}">Error message</span>
+		</div>
+
+		<!-- 1. Header Frame Outside Card Box Container -->
+		<div class="crud-header">
+			<div class="crud-title">
+				<h2>Allergy Management</h2>
+				<p>Manage the list of allergies to ensure user safety.</p>
+			</div>
+
+			<!-- Right-side wrapper to keep Search and Add Button grouped together -->
+			<div
+				style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+				<!-- Search Form -->
+				<form th:action="@{/admin/allergy/list}" method="GET"
+					style="display: flex; align-items: center; gap: 12px; margin-bottom: 0; flex-wrap: wrap;">
+					<div class="global-search-box">
+						<!-- Orange Search Icon -->
+						<i class="bi bi-search"></i>
+
+						<!-- Search Input Field -->
+						<input type="text" id="searchInput" name="keyword"
+							th:value="${keyword}" class="form-control"
+							placeholder="Search allergens..." aria-label="Search"
+							oninput="toggleClearButton(this)">
+
+						<!-- Clear Button Icon -->
+						<button type="button" id="clearBtn"
+							class="global-search-clear-btn" onclick="clearSearch(this)"
+							th:style="${keyword != null and !#strings.isEmpty(keyword)} ? 'display: block;' : 'display: none;'"
+							title="Clear search">
+							<i class="bi bi-x-circle-fill"></i>
+						</button>
+					</div>
+					<!-- Status Dropdown (Active/Inactive) -->
+					<select name="status" class="btn-global"
+						style="height: auto; border: 1.5px solid var(--primary-color); background-color: #ffffff; color: var(--primary-color); cursor: pointer; font-weight: 600; border-radius: 8px; padding: 8px 16px;"
+						onchange="this.form.submit()">
+						<option value=""
+							style="background-color: #ffffff; color: #333333;">All
+							Statuses</option>
+						<option value="true" th:selected="${selectedStatus == true}"
+							style="background-color: #ffffff; color: #333333;">Active</option>
+						<option value="false" th:selected="${selectedStatus == false}"
+							style="background-color: #ffffff; color: #333333;">Inactive</option>
+					</select>
+				</form>
+
+				<!-- Add Button -->
+				<a th:href="@{/admin/allergy/create}" class="btn-global btn-primary">➕
+					Add New Allergy</a>
+			</div>
+		</div>
+
+		<!-- 2. Clean Size Frame Container Card Layout with Responsive Scrollable Wrapper -->
+		<div class="card-table-wrapper">
+			<div class="table-responsive">
+				<table class="global-table">
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>Allergy Name</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Thymeleaf iteration entry row -->
+						<tr th:each="a, stat : ${allergens}">
+							<td th:text="${stat.count}">1</td>
+							<td class="col-name" th:text="${a.name}">Peanuts</td>
+							<td><span th:if="${#bools.isFalse(a.isDeleted)}"
+								class="badge badge-success">Active</span> <span
+								th:if="${#bools.isTrue(a.isDeleted)}" class="badge badge-danger">Inactive</span>
+							</td>
+							<td class="col-actions">
+								<div class="btn-action-group">
+									<a th:href="@{/admin/allergy/view/{id}(id=${a.allergenId})}"
+										class="btn-global btn-secondary btn-pill-sm"
+										title="View Details"> <i class="bi bi-eye"></i> View
+									</a> <a th:href="@{/admin/allergy/edit/{id}(id=${a.allergenId})}"
+										class="btn-global btn-primary btn-pill-sm" title="Edit"> <i
+										class="bi bi-pencil-square"></i> Edit
+									</a>
+									<button th:if="${#bools.isFalse(a.isDeleted)}" type="button"
+										class="btn-global btn-danger btn-pill-sm"
+										th:onclick="openDeleteCard([[${a.allergenId}]], [[${a.name}]])"
+										title="Delete Record">
+										<i class="bi bi-trash3"></i> Delete
+									</button>
+									<form th:if="${#bools.isTrue(a.isDeleted)}"
+										th:action="@{/admin/allergy/activate}" method="POST"
+										class="btn-action-form">
+										<input type="hidden" name="id" th:value="${a.allergenId}" />
+										<button type="submit"
+											class="btn-global btn-secondary btn-pill-sm btn-activate-text"
+											title="Activate">
+											<i class="bi bi-check-circle"></i> Activate
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+
+						<!-- Static Placeholder Fallback row when list database is empty -->
+						<tr th:if="${#lists.isEmpty(allergens)}">
+							<td colspan="4"
+								style="text-align: center; color: #64748b; padding: 40px;">No
+								allergy found.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- 💡 Modern Pill-Shaped Pagination Container (Always Appears) -->
+		<div
+			style="display: flex; justify-content: center; margin-top: auto; padding-top: 20px; padding-bottom: 20px;">
+			<nav aria-label="Page navigation"
+				style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 50rem; padding: 6px 16px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 8px;">
+
+				<!-- Previous Button -->
+				<a th:if="${allergyPage.hasPrevious()}"
+					th:href="@{/admin/allergy/list(page=${allergyPage.number - 1}, size=${allergyPage.size}, keyword=${keyword},status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&lt;</a>
+				<span th:unless="${allergyPage.hasPrevious()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&lt;</span>
+
+				<!-- Page Numbers Loop -->
+				<th:block
+					th:with="current=${allergyPage.number}, total=${allergyPage.totalPages == 0 ? 1 : allergyPage.totalPages}">
+					<span th:each="i : ${#numbers.sequence(0, total - 1)}"> <th:block
+							th:if="${i == 0 || i == total - 1 || (i >= current - 1 && i <= current + 1)}">
+							<a th:if="${i != current}"
+								th:href="@{/admin/allergy/list(page=${i}, size=${allergyPage.size}, keyword=${keyword},status=${selectedStatus})}"
+								th:text="${i + 1}"
+								style="color: #4b5563; text-decoration: none; padding: 6px 10px; font-size: 14px; font-weight: 500; border-radius: 50%;">1</a>
+
+							<!-- Active Page Pill Style -->
+							<span th:if="${i == current}" th:text="${i + 1}"
+								style="background-color: #6366f1; color: #ffffff; padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 50rem; display: inline-block; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.4);">1</span>
+						</th:block> <!-- Ellipsis (...) --> <span
+						th:if="${(i == current - 2 && i > 0) || (i == current + 2 && i < total - 1)}"
+						style="color: #9ca3af; padding: 0 4px; font-size: 14px;">...</span>
+					</span>
+				</th:block>
+
+				<!-- Next Button -->
+				<a th:if="${allergyPage.hasNext()}"
+					th:href="@{/admin/allergy/list(page=${allergyPage.number + 1}, size=${allergyPage.size}, keyword=${keyword},status=${selectedStatus})}"
+					style="color: #4b5563; text-decoration: none; padding: 4px 8px; font-size: 15px; font-weight: 600;">&gt;</a>
+				<span th:unless="${allergyPage.hasNext()}"
+					style="color: #d1d5db; padding: 4px 8px; font-size: 15px; cursor: not-allowed;">&gt;</span>
+
+			</nav>
+		</div>
+	</main>
+
+	<!-- 3. In-Frame Overlay Confirmation Modal Card Structure -->
+	<!-- Delete Modal -->
+	<div id="deleteModal" class="modal-overlay">
+		<div class="modal-card">
+			<h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800;">Confirm
+				Deletion</h3>
+			<p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b;">
+				Are you sure you want to delete the allergy <strong
+					id="modalTargetName" style="color: var(--primary-color);"></strong>?
+			</p>
+			<form th:action="@{/admin/allergy/delete}" method="POST">
+				<input type="hidden" name="id" id="modalTargetId" value="">
+				<div
+					style="display: flex; justify-content: flex-end; border-top: none; gap: 12px;">
+					<button type="button" class="btn-global btn-secondary"
+						onclick="closeDeleteCard()">
+						<i class="bi bi-x-circle"></i>Cancel
+					</button>
+					<button type="submit" class="btn-global btn-danger">
+						<i class="bi bi-trash3"></i> Delete
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- JavaScript Toggle Controls Frame safely wrapped for Thymeleaf parsing -->
+	<script type="text/javascript" th:inline="javascript">
+	const modal = document.getElementById('deleteModal');
+	const modalIdInput = document.getElementById('modalTargetId');
+	const modalNameSpan = document.getElementById('modalTargetName');
+
+	function openDeleteCard(id, name) {
+		modalIdInput.value = id;
+		modalNameSpan.textContent = "'" + name + "'";
+		modal.classList.add('active');
+	}
+
+	function closeDeleteCard() {
+		modal.classList.remove('active');
+	}
+
+	window.onclick = function(event) {
+		if (event.target === modal) {
+			closeDeleteCard();
+		}
+	}
+
+		// Clear Search Input Scripts
+		function toggleClearButton(input) {
+			const clearBtn = input.parentNode.querySelector('#clearBtn');
+			if (input.value.trim().length > 0) {
+				clearBtn.style.display = 'block';
+			} else {
+				clearBtn.style.display = 'none';
+			}
+		}
+
+		function clearSearch(button) {
+			const inputGroup = button.parentNode;
+			const input = inputGroup.querySelector('input');
+			input.value = '';
+			button.style.display = 'none';
+			input.form.submit();
+		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			const searchInputs = document.querySelectorAll("input[name='keyword']");
+			searchInputs.forEach(input => {
+				toggleClearButton(input);
+			});
+		});
+		
+
+		setTimeout(() => {
+	    const alert = document.getElementById("alertMessage");
+	    if (alert) {
+	        alert.classList.add("alert-msg-hide");
+	        setTimeout(() => {
+	            alert.remove();
+	        }, 5000);
+	    }
+	}, 700);
+		
+		setTimeout(() => {
+	    const alert = document.getElementById("errorAlert");
+	    if (alert) {
+	        alert.classList.add("alert-msg-hide");
+	        setTimeout(() => {
+	            alert.remove();
+	        }, 5000);
+	    }
+	}, 700);
+	</script>
+
+</body>
+</html>

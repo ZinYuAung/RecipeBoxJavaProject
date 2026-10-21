@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Create User — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-users')}"></div>
+
+	<main class="container">
+
+		<div class="form-card">
+			<div class="form-title-area">
+				<h2>Create User</h2>
+				<p>Add a new user to the database.</p>
+			</div>
+			<form th:action="@{/admin/save}" method="POST">
+				<div style="display: flex; gap: 16px; margin-bottom: 22px;">
+					<div class="form-group">
+						<label for="firstName" class="form-label">First Name</label> <input
+							type="text" id="firstName" name="firstName" class="form-control"
+							placeholder="John" th:value="${firstName}"> <span
+							th:if="${firstNameError}" th:text="${firstNameError}"
+							style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;"></span>
+					</div>
+
+					<div class="form-group">
+						<label for="lastName" class="form-label">Last Name</label> <input
+							type="text" id="lastName" name="lastName" class="form-control"
+							placeholder="Doe" th:value="${lastName}">
+					</div>
+				</div>
+
+				<!-- Email Input -->
+				<div class="form-group">
+					<label for="email" class="form-label">Email Address</label> <input
+						type="email" id="email" name="email" class="form-control"
+						placeholder="you@example.com" th:value="${email}">
+					<!-- Inline Error for Email -->
+					<span th:if="${emailError}" th:text="${emailError}"
+						style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<!-- Password Input -->
+				<div class="form-group">
+					<label for="password" class="form-label">Password</label> <input
+						type="password" id="password" name="password" class="form-control"
+						placeholder="Create password">
+					<!-- Inline Error for Password -->
+					<span th:if="${passwordError}" th:text="${passwordError}"
+						style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<!-- Confirm Password Input -->
+				<div class="form-group">
+					<label for="confirmPassword" class="form-label">Confirm
+						Password</label> <input type="password" id="confirmPassword"
+						name="confirmPassword" class="form-control"
+						placeholder="Confirm password"> <span
+						th:if="${confirmPasswordError}" th:text="${confirmPasswordError}"
+						style="color: #ef4444; font-size: 12px; margin-top: 4px; display: block;"></span>
+				</div>
+
+				<div class="form-group">
+			<div class="form-group"
+						th:if="${session.loginUser != null and session.loginUser.role.name() == 'SUPERADMIN'}">
+						<label class="form-label">System Role</label> <select name="role"
+							class="form-control">
+							<option value="USER">User</option>
+							<option value="ADMIN">Admin</option>
+						</select>
+					</div>
+
+					<div class="form-action-row">
+						<a th:href="@{/admin/users}" class="btn-global btn-secondary">
+							<i class="bi bi-x-circle"></i>Cancel
+						</a>
+						<button type="submit" class="btn-global btn-primary">
+							<i class="bi bi-check-circle-fill"></i>Create User
+						</button>
+					</div>
+			</form>
+		</div>
+
+	</main>
+
+</body>
+</html>

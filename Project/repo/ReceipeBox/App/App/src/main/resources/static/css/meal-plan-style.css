@@ -1,0 +1,233 @@
+/* ==========================================================================
+   7. 7-DAY MEAL TIMELINE & PLANNER LAYOUTS
+   ========================================================================== */
+.meal-timeline-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	width: 100%;
+}
+
+.timeline-day-card {
+	display: flex;
+	background: #ffffff;
+	border-radius: 16px;
+	border: 1px solid var(--border-color);
+	overflow: hidden;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+}
+
+.timeline-day-card .day-indicator {
+	background: var(--dark-slate);
+	color: #ffffff;
+	width: 100px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 800;
+	text-align: center;
+	flex-shrink: 0;
+}
+
+.timeline-day-card .day-indicator h3 {
+	font-size: 18px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.day-meals-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	padding: 16px;
+	width: 100%;
+	background: #ffffff;
+}
+
+.meal-slot-item {
+	position: relative;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 12px;
+	padding-top: 18px;
+}
+
+.meal-type-badge {
+	position: absolute;
+	top: 8px;
+	left: 14px;
+	font-size: 10px;
+	font-weight: 800;
+	text-transform: uppercase;
+	color: #ffffff;
+	background: var(--primary-color);
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+.meal-mini-card {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+}
+
+.meal-mini-card img {
+	width: 65px;
+	height: 65px;
+	object-fit: cover;
+	border-radius: 8px;
+	flex-shrink: 0;
+}
+
+.mini-card-details h4 {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--dark-slate);
+	margin-bottom: 2px;
+	display: -webkit-box;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.mini-card-details .cooking-duration {
+	font-size: 11px;
+	color: #64748b;
+	display: block;
+}
+
+/* BMI Colors */
+:root {
+	--bmi-underweight-color: #2563eb;
+	--bmi-underweight-bg: #dbeafe;
+	--bmi-normal-color: #16a34a;
+	--bmi-normal-bg: #dcfce7;
+	--bmi-overweight-color: #d97706;
+	--bmi-overweight-bg: #fef3c7;
+	--bmi-obese-color: #dc2626;
+	--bmi-obese-bg: #fee2e2;
+}
+
+.bmi-underweight {
+	color: var(--bmi-underweight-color);
+	background-color: var(--bmi-underweight-bg);
+}
+
+.bmi-normal {
+	color: var(--bmi-normal-color);
+	background-color: var(--bmi-normal-bg);
+}
+
+.bmi-overweight {
+	color: var(--bmi-overweight-color);
+	background-color: var(--bmi-overweight-bg);
+}
+
+.bmi-obese {
+	color: var(--bmi-obese-color);
+	background-color: var(--bmi-obese-bg);
+}
+
+.bmi-status {
+	display: inline-block;
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-weight: 600;
+	font-size: 14px;
+}
+
+.bmi-card {
+	background: white;
+	border-radius: 16px;
+	padding: 24px;
+	border: 1px solid #e2e8f0;
+	margin-bottom: 24px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.badge-category {
+	display: inline-block;
+	padding: 4px 14px;
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: 700;
+	color: white;
+}
+
+.bg-underweight {
+	background-color: #3b82f6;
+}
+
+.bg-normal {
+	background-color: #22c55e;
+}
+
+.bg-overweight {
+	background-color: #eab308;
+}
+
+.bg-obese {
+	background-color: #ef4444;
+}
+
+/* Meal 1 Day Plan*/
+.day-detail-card {
+	background: #ffffff;
+	border: 1px solid var(--border-color, #e2e8f0);
+	border-radius: 16px;
+	padding: 24px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+	display: flex;
+	gap: 20px;
+	align-items: flex-start;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.day-detail-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.recipe-thumb-container {
+	width: 140px;
+	height: 140px;
+	flex-shrink: 0;
+	border-radius: 12px;
+	overflow: hidden;
+	background: #f1f5f9;
+}
+
+.recipe-thumb-container img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.recipe-content-box {
+	flex-grow: 1;
+}
+
+@media ( max-width : 640px) {
+	.day-detail-card {
+		flex-direction: column;
+	}
+	.recipe-thumb-container {
+		width: 100%;
+		height: 180px;
+	}
+}
+
+/* Responsive updates for mobile layouts */
+@media ( max-width : 912px) {
+	.timeline-day-card {
+		flex-direction: column;
+	}
+	.timeline-day-card .day-indicator {
+		width: 100%;
+		padding: 10px;
+	}
+	.day-meals-grid {
+		grid-template-columns: 1fr;
+	}
+}

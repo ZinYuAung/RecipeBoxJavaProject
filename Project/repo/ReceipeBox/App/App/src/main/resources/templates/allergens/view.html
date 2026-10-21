@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head
+	th:replace="~{fragments/head :: common-head('Allery Details — RecipeBox')}">
+</head>
+<body>
+
+	<div
+		th:replace="~{fragments/admin-header :: global-header('admin-allergens')}"></div>
+
+	<main class="container">
+
+		<div class="detail-card">
+			<div class="form-title-area">
+				<h2>Allergy Profile</h2>
+				<p>Review allergy properties</p>
+			</div>
+			<!-- Allergen Name Field -->
+			<div class="detail-row">
+				<div class="detail-label">Allergy Name</div>
+				<div class="detail-value" th:text="${allergen.name}"></div>
+			</div>
+			<!-- Total Ingredient Metric Count Field (Dynamic Count) -->
+			<div class="detail-row">
+				<div class="detail-label">Total Ingredient Count</div>
+				<div class="detail-value">
+					<span class="count-indicator"
+						th:text="${#lists.size(relatedIngredients) + ' Items'}">0
+						Items</span>
+				</div>
+			</div>
+
+			<!-- Associated Ingredients Field -->
+			<!-- <div class="detail-row">
+				<div class="detail-label">Associated Ingredients</div>
+				<div class="detail-value">
+					<span th:if="${#lists.isEmpty(relatedIngredients)}"
+						style="color: #64748b; font-size: 14px;">No ingredients
+						associated</span> <span th:each="ia : ${relatedIngredients}"
+						th:text="${ia.ingredient.name}" class="allergen-badge">Ingredient</span>
+				</div>
+			</div> -->
+
+			<!-- Associated Ingredients Field (Full Width Layout with Scroll) -->
+			<div style="margin-bottom: 20px;">
+				<label class="form-label"
+					style="display: block; margin-bottom: 8px;">Associated
+					Ingredients</label> <span th:if="${#lists.isEmpty(relatedIngredients)}"
+					style="color: #64748b; font-size: 14px;">No ingredients
+					associated</span>
+
+				<!-- relatedIngredients more 5 , max-height and overflow-y -->
+				<div th:if="${!#lists.isEmpty(relatedIngredients)}"
+					th:style="${#lists.size(relatedIngredients) > 5} ? 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; max-height: 120px; overflow-y: auto; background-color: #f8fafc; width: 100%;' : 'border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background-color: #f8fafc; width: 100%;'">
+
+					<!-- less and 5, 1 flex ၊more5 grid ( -->
+					<div
+						th:style="${#lists.size(relatedIngredients) <= 5} ? 'display: flex; gap: 12px; flex-wrap: wrap; align-items: center;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;'">
+						<span th:each="ia : ${relatedIngredients}"
+							th:text="${ia.ingredient.name}" class="allergen-badge"
+							style="display: inline-block;">Ingredient</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Action Footer Links -->
+			<div class="form-action-row">
+				<a th:href="@{/admin/allergy}" class="btn-global btn-secondary">
+					<i class="bi bi-arrow-left"></i>Back to List
+				</a> <a th:href="@{/admin/allergy/edit/{id}(id=${allergen.allergenId})}"
+					class="btn-global btn-primary"> <i class="bi bi-pencil-square"></i>Edit
+					Allergy
+				</a>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+</html>
